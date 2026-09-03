@@ -33,7 +33,7 @@ Next.js Frontend
   ↓
 Node.js / TypeScript Backend
   ├── Authentication / Session Logic
-  ├── Cookie Analysis
+  ├── Cookie Inspection / Analysis
   └── Security Scenarios
   ↓
 Results / Evidence
@@ -45,6 +45,10 @@ Login
 Server creates session
   ↓
 Session cookie returned to browser
+  ↓
+Inspect Session Cookie
+  ↓
+Review attributes and security explanations
   ↓
 Authenticated requests use session
   ↓
@@ -89,9 +93,11 @@ CookieGuard/
 ├── backend/
 │   ├── src/
 │   │   ├── server.ts
-│   │   └── session.ts
+│   │   ├── session.ts
+│   │   └── cookie-inspection.ts
 │   ├── tests/
-│   │   └── session.test.ts
+│   │   ├── session.test.ts
+│   │   └── cookie-inspection.test.ts
 │   ├── package.json
 │   ├── package-lock.json
 │   └── tsconfig.json
@@ -114,7 +120,7 @@ CookieGuard/
 - Web-security testing
 
 ## Expected Demonstration
-Establish a session, inspect its cookie, run a controlled security scenario, observe the result, apply the mitigation, and repeat the scenario to verify the change.
+Establish a session, inspect its cookie, review each security attribute, run a controlled security scenario, observe the result, apply the mitigation, and repeat the scenario to verify the change.
 
 ## Out of Scope
 - Internet-wide or arbitrary website scanning
@@ -132,4 +138,4 @@ Establish a session, inspect its cookie, run a controlled security scenario, obs
 - Expanded automated browser testing
 
 ## Status
-Phase 2 implementation complete: demo authentication, server-side sessions, session cookie handling, logout, and backend session tests are implemented. Local verification is required before Phase 3.
+Phase 3 implementation complete: authenticated cookie inspection, session-cookie attribute analysis, educational explanations, and cookie inspection tests are implemented. Local verification is required before Phase 4.
