@@ -52,7 +52,7 @@ Review attributes and security explanations
   ↓
 Authenticated requests use session
   ↓
-Logout removes server session and expires cookie
+Logout removes server session and expires cookies
 ```
 
 ```text
@@ -86,6 +86,8 @@ Compare Results
 CookieGuard/
 ├── frontend/
 │   ├── app/
+│   │   ├── xss-lab/
+│   │   └── icon.svg
 │   ├── package.json
 │   ├── package-lock.json
 │   ├── next.config.ts
@@ -94,12 +96,13 @@ CookieGuard/
 │   ├── src/
 │   │   ├── server.ts
 │   │   ├── session.ts
-│   │   └── cookie-inspection.ts
+│   │   ├── cookie-inspection.ts
+│   │   └── xss-lab.ts
 │   ├── tests/
 │   │   ├── session.test.ts
-│   │   └── cookie-inspection.test.ts
+│   │   ├── cookie-inspection.test.ts
+│   │   └── xss-lab.test.ts
 │   ├── package.json
-│   ├── package-lock.json
 │   └── tsconfig.json
 ├── docs/
 │   └── architecture.md
@@ -122,6 +125,8 @@ CookieGuard/
 ## Expected Demonstration
 Establish a session, inspect its cookie, review each security attribute, run a controlled security scenario, observe the result, apply the mitigation, and repeat the scenario to verify the change.
 
+For the `HttpOnly` scenario, CookieGuard uses a separate demonstration cookie so the authenticated application session is not weakened. Vulnerable mode issues the lab cookie without `HttpOnly`; protected mode issues it with `HttpOnly`. The same controlled XSS payload is then used to compare what client-side JavaScript can read.
+
 ## Out of Scope
 - Internet-wide or arbitrary website scanning
 - Full penetration-testing automation
@@ -138,4 +143,4 @@ Establish a session, inspect its cookie, review each security attribute, run a c
 - Expanded automated browser testing
 
 ## Status
-Phase 3 implementation complete: authenticated cookie inspection, session-cookie attribute analysis, educational explanations, and cookie inspection tests are implemented. Local verification is required before Phase 4.
+Phase 4 implementation complete: the controlled HttpOnly + XSS lab, vulnerable/protected cookie modes, XSS demonstration UI, and backend XSS cookie tests are implemented. Local verification is required before Phase 5.
