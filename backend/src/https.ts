@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
-import { createServer, type IncomingMessage, type ServerResponse } from "node:https";
+import { type IncomingMessage, type ServerResponse } from "node:http";
+import { createServer } from "node:https";
 import { join } from "node:path";
 
 export function createHttpsServer(
