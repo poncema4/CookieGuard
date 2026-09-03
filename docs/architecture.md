@@ -28,13 +28,31 @@ Cookie Inspection API
 Cookie Attributes + Security Explanations
 ```
 
-The Phase 3 inspection view covers the session cookie name, domain, path, Secure, HttpOnly, SameSite, expiration, and persistent status. It also explains the security purpose and current development limitation of each attribute.
+The Phase 3 inspection view covers the session cookie name, domain, path, Secure, HttpOnly, SameSite, expiration, and persistent status. Cookie settings are maintained from a single backend configuration so the inspection data and generated session-cookie header do not drift apart.
+
+## HttpOnly + XSS Flow
+
+```text
+Authenticated Session
+        ↓
+HttpOnly + XSS Lab
+        ↓
+Choose Vulnerable or Protected Mode
+        ↓
+Backend issues separate lab cookie
+        ↓
+Run the same controlled XSS payload
+        ↓
+Compare document.cookie output
+```
+
+The XSS lab deliberately uses a separate `cookieguard_xss_lab` cookie. Vulnerable mode omits `HttpOnly`, allowing client-side JavaScript to read the demonstration cookie. Protected mode includes `HttpOnly`, so the same payload cannot read that cookie. The authenticated application session is not weakened by the experiment.
 
 ## Current Development Configuration
 
 The local lab uses HTTP on `localhost`, so the session cookie is currently configured without `Secure`. `HttpOnly` is enabled, `SameSite=Lax` is enabled, the path is `/`, and the cookie is a session cookie without an explicit persistent lifetime.
 
-The HTTP/`Secure` behavior will be changed and demonstrated in the dedicated HTTPS phase rather than in Phase 3.
+The HTTP/`Secure` behavior will be changed and demonstrated in the dedicated HTTPS phase rather than in the current XSS phase.
 
 ## Local Development
 
