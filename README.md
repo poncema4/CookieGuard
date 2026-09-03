@@ -29,9 +29,9 @@ Cookie attributes such as `Secure`, `HttpOnly`, and `SameSite` are easy to treat
 ```text
 Browser
   ↓
-Next.js Frontend
+Next.js Frontend (HTTPS)
   ↓
-Node.js / TypeScript Backend
+Node.js / TypeScript Backend (HTTPS)
   ├── Authentication / Session Logic
   ├── Cookie Inspection / Analysis
   └── Security Scenarios
@@ -44,23 +44,23 @@ Login
   ↓
 Server creates session
   ↓
-Session cookie returned to browser
+Secure + HttpOnly + SameSite cookie returned
   ↓
 Inspect Session Cookie
   ↓
 Review attributes and security explanations
   ↓
-Authenticated requests use session
+Authenticated requests use session over HTTPS
   ↓
 Logout removes server session and expires cookies
 ```
 
 ```text
-Weak Configuration
+Security Control
       ↓
-Run Scenario
+Run Controlled Scenario
       ↓
-Observe Behavior
+Observe Browser / Request Behavior
       ↓
 Apply Mitigation
       ↓
@@ -88,6 +88,7 @@ CookieGuard/
 │   ├── app/
 │   │   ├── xss-lab/
 │   │   ├── csrf-lab/
+│   │   ├── secure-lab/
 │   │   └── icon.svg
 │   ├── package.json
 │   ├── package-lock.json
@@ -96,6 +97,7 @@ CookieGuard/
 ├── backend/
 │   ├── src/
 │   │   ├── server.ts
+│   │   ├── https.ts
 │   │   ├── session.ts
 │   │   ├── cookie-inspection.ts
 │   │   ├── xss-lab.ts
@@ -104,9 +106,14 @@ CookieGuard/
 │   │   ├── session.test.ts
 │   │   ├── cookie-inspection.test.ts
 │   │   ├── xss-lab.test.ts
-│   │   └── csrf-lab.test.ts
+│   │   ├── csrf-lab.test.ts
+│   │   └── https.test.ts
+│   ├── certs/
+│   │   └── (generated locally)
 │   ├── package.json
 │   └── tsconfig.json
+├── scripts/
+│   └── generate-dev-certificate.ps1
 ├── docs/
 │   └── architecture.md
 ├── .gitignore
@@ -130,7 +137,9 @@ Establish a session, inspect its cookie, review each security attribute, run a c
 
 For the `HttpOnly` scenario, CookieGuard uses a separate demonstration cookie so the authenticated application session is not weakened. Vulnerable mode issues the lab cookie without `HttpOnly`; protected mode issues it with `HttpOnly`. The same controlled XSS payload is then used to compare what client-side JavaScript can read.
 
-For the `SameSite` scenario, CookieGuard uses a separate CSRF lab cookie on `127.0.0.1:4000`. A same-site POST can include the cookie, while a controlled cross-site POST from the frontend origin is blocked when the cookie uses `SameSite=Lax` or `SameSite=Strict`.
+For the `SameSite` scenario, CookieGuard uses a separate CSRF lab cookie. A same-site POST can include the cookie, while a controlled cross-site POST is blocked when the cookie uses `SameSite=Lax` or `SameSite=Strict`.
+
+For the `Secure` scenario, the local frontend and backend run over HTTPS using a locally generated development certificate. The authenticated session cookie includes `Secure`, `HttpOnly`, and `SameSite=Lax`. Browser developer tools and the login response can be used to verify the resulting cookie attributes and HTTPS transport.
 
 ## Out of Scope
 - Internet-wide or arbitrary website scanning
@@ -148,4 +157,4 @@ For the `SameSite` scenario, CookieGuard uses a separate CSRF lab cookie on `127
 - Expanded automated browser testing
 
 ## Status
-Phase 5 implementation complete: the controlled SameSite + CSRF lab, separate CSRF lab cookie, same-site/cross-site POST workflow, and backend tests are implemented. Local verification is required before Phase 6.
+Phase 6 implementation complete: CookieGuard now runs its backend and frontend over local HTTPS, enables the `Secure` session-cookie attribute, includes local certificate generation, and adds a Secure + HTTPS demonstration lab. Local verification is required before Phase 7.
