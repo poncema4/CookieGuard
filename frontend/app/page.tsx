@@ -30,10 +30,24 @@ export default function Home() {
   async function loadSession() {
     try {
       const response = await fetch("/api/auth/session", { cache: "no-store" });
+      if (response.status === 401) {
+        setSession({ authenticated: false });
+        setInspection(null);
+        setMessage("No active session.");
+        return;
+      }
+
+      if (!response.ok) {
+        setMessage("Unable to check session.");
+        return;
+      }
+
       const data = (await response.json()) as SessionResponse;
       setSession(data);
       setMessage(data.authenticated ? "Session is active." : "No active session.");
-    } catch { setMessage("Backend unavailable."); }
+    } catch {
+      setMessage("Backend unavailable.");
+    }
   }
 
   useEffect(() => { void loadSession(); }, []);
