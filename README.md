@@ -1,51 +1,39 @@
 # CookieGuard
 
-**Interactive Cookie & Session Security Laboratory**
+**Interactive Cookie & Session Security Lab**
 
 **Course:** App Security & Web Technology  
 **Project:** Final MVP / Proof of Concept
 
 ## Overview
 
-CookieGuard is a controlled web-security lab focused on cookies, sessions, and the browser security controls that protect them.
+CookieGuard is a controlled web-security lab focused on cookies, sessions, and the browser controls that protect them. The application will let a user inspect cookie settings, run selected security scenarios, apply a mitigation, and compare the result.
 
-The MVP will let a user inspect cookie settings, reproduce selected security scenarios, apply a mitigation, and observe the difference. The project is intentionally focused on demonstrating **why** a control matters rather than producing a generic security score.
+## Problem
 
-## Project Goal
+Cookie security is often treated as a checklist of attributes such as `Secure`, `HttpOnly`, and `SameSite`. CookieGuard connects those settings to observable behavior so the security impact of each control can be demonstrated.
 
-The main question CookieGuard addresses is:
+## Objectives
 
-> **What is wrong with this cookie or session configuration, what risk does it create, and what changes when the control is fixed?**
-
-The MVP will provide a small web application with intentionally configurable security behavior and a simple interface for running the demonstrations.
+- Inspect important cookie and session attributes.
+- Identify selected configuration weaknesses.
+- Demonstrate the security impact of `HttpOnly`, `SameSite`, and `Secure`.
+- Show controlled XSS, CSRF, and HTTPS-related scenarios.
+- Compare an intentionally weak configuration with its mitigated state.
 
 ## MVP Scope
 
-- Inspect cookie attributes: `Secure`, `HttpOnly`, `SameSite`, `Domain`, `Path`, and expiration.
-- Identify selected cookie/session security weaknesses.
-- Explain the purpose and risk of each relevant control.
-- Demonstrate **HttpOnly + XSS** in a controlled environment.
-- Demonstrate **SameSite + CSRF** behavior.
-- Demonstrate the relationship between **Secure cookies and HTTPS**.
-- Compare vulnerable and mitigated configurations.
+The MVP will include:
 
-### Example Demonstration
+- A small authenticated web application.
+- Cookie/session inspection.
+- Cookie security analysis and explanations.
+- A controlled `HttpOnly` + XSS demonstration.
+- A controlled `SameSite` + CSRF demonstration.
+- A `Secure` cookie + HTTPS demonstration.
+- Browser/request evidence that supports each result.
 
-```text
-Weak Cookie Configuration
-        ↓
-Controlled Security Scenario
-        ↓
-Observe the Result
-        ↓
-Apply Mitigation
-        ↓
-Run the Scenario Again
-        ↓
-Compare the Result
-```
-
-## Planned Architecture
+## Architecture / Workflow
 
 ```text
 Browser
@@ -56,9 +44,23 @@ Node.js / TypeScript Backend
   ├── Cookie Analysis
   ├── Session Logic
   └── Security Lab Scenarios
+  ↓
+Results / Evidence
 ```
 
-The frontend, backend, experiments, and tests will remain separated by responsibility.
+```text
+Weak Configuration
+      ↓
+Run Scenario
+      ↓
+Observe Behavior
+      ↓
+Apply Mitigation
+      ↓
+Run Again
+      ↓
+Compare Results
+```
 
 ## Tech Stack
 
@@ -66,12 +68,12 @@ The frontend, backend, experiments, and tests will remain separated by responsib
 - **Frontend:** Next.js
 - **Runtime / Package Manager:** Node.js / npm
 - **Backend:** Node.js + TypeScript
-- **Testing:** Playwright and application-level tests
+- **Testing:** Playwright and application tests
 - **Web Testing:** Burp Suite and browser developer tools
-- **TLS:** OpenSSL for local HTTPS/certificate testing where needed
+- **TLS:** OpenSSL for local HTTPS testing
 - **Version Control:** Git / GitHub
 
-## Planned Repository Structure
+## Project Structure
 
 ```text
 CookieGuard/
@@ -83,17 +85,22 @@ CookieGuard/
 └── README.md
 ```
 
-The exact files will be determined during implementation; the repository will remain organized by responsibility.
+## Security Concepts
 
-## Course Alignment
-
-CookieGuard applies the course material on HTTP/web applications, XSS, CSRF, authentication and sessions, cookie security, session security, HTTPS, and web-security testing.
+- HTTP and web application behavior
+- Cookies and sessions
+- Authentication and session management
+- `Secure`, `HttpOnly`, and `SameSite`
+- XSS and CSRF
+- HTTPS/TLS
+- Secure session design
+- Web-security testing
 
 ## Expected Demonstration
 
-A successful MVP demonstration will show a user establishing a session, inspecting its cookie, running a controlled security scenario, applying a mitigation, and repeating the scenario to verify the change.
+A user will establish a session, inspect the session cookie, run a controlled security scenario, observe the result, apply the appropriate mitigation, and repeat the scenario to verify the change.
 
-All testing will remain within the project's controlled environment. CookieGuard is not intended to scan or attack third-party websites.
+All testing will remain inside the controlled lab environment.
 
 ## Out of Scope
 
@@ -104,6 +111,15 @@ All testing will remain within the project's controlled environment. CookieGuard
 - Large vulnerability databases
 - Generic security scoring
 
+## Future Enhancements
+
+- JWT security demonstrations
+- Additional authentication/session scenarios
+- Security-header analysis
+- Additional XSS and CSRF experiments
+- More automated browser tests
+- Additional educational modules
+
 ## Status
 
-This repository currently defines the project and MVP. Implementation will begin with the requirements and architecture, followed by the application and security demonstrations.
+Planned MVP. Implementation will begin with the application requirements and architecture.
