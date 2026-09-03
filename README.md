@@ -2,36 +2,31 @@
 
 **Interactive Cookie & Session Security Lab**
 
-**Course:** App Security & Web Technology  
-**Project:** Final MVP / Proof of Concept
-
 ## Overview
 
-CookieGuard is a controlled web-security lab focused on cookies, sessions, and the browser controls that protect them. The application will let a user inspect cookie settings, run selected security scenarios, apply a mitigation, and compare the result.
+CookieGuard is a controlled web-security lab focused on cookies, sessions, and browser security controls. The application will let users inspect cookie settings, run security scenarios, apply mitigations, and observe the difference.
 
 ## Problem
 
-Cookie security is often treated as a checklist of attributes such as `Secure`, `HttpOnly`, and `SameSite`. CookieGuard connects those settings to observable behavior so the security impact of each control can be demonstrated.
+Cookie attributes such as `Secure`, `HttpOnly`, and `SameSite` are easy to treat as a checklist. CookieGuard connects those settings to actual web-application behavior so their security impact can be demonstrated.
 
 ## Objectives
 
 - Inspect important cookie and session attributes.
 - Identify selected configuration weaknesses.
-- Demonstrate the security impact of `HttpOnly`, `SameSite`, and `Secure`.
-- Show controlled XSS, CSRF, and HTTPS-related scenarios.
-- Compare an intentionally weak configuration with its mitigated state.
+- Demonstrate the purpose of `Secure`, `HttpOnly`, and `SameSite`.
+- Demonstrate controlled XSS, CSRF, and HTTPS scenarios.
+- Compare vulnerable and mitigated configurations.
 
 ## MVP Scope
 
-The MVP will include:
-
-- A small authenticated web application.
-- Cookie/session inspection.
-- Cookie security analysis and explanations.
-- A controlled `HttpOnly` + XSS demonstration.
-- A controlled `SameSite` + CSRF demonstration.
-- A `Secure` cookie + HTTPS demonstration.
-- Browser/request evidence that supports each result.
+- Small authenticated web application.
+- Cookie and session inspection.
+- Security analysis with concise explanations.
+- Controlled `HttpOnly` + XSS scenario.
+- Controlled `SameSite` + CSRF scenario.
+- `Secure` cookie + HTTPS scenario.
+- Browser and request evidence for each result.
 
 ## Architecture / Workflow
 
@@ -43,7 +38,7 @@ Next.js Frontend
 Node.js / TypeScript Backend
   ├── Cookie Analysis
   ├── Session Logic
-  └── Security Lab Scenarios
+  └── Security Scenarios
   ↓
 Results / Evidence
 ```
@@ -64,14 +59,18 @@ Compare Results
 
 ## Tech Stack
 
-- **Language:** TypeScript
-- **Frontend:** Next.js
-- **Runtime / Package Manager:** Node.js / npm
-- **Backend:** Node.js + TypeScript
-- **Testing:** Playwright and application tests
-- **Web Testing:** Burp Suite and browser developer tools
-- **TLS:** OpenSSL for local HTTPS testing
-- **Version Control:** Git / GitHub
+| Area | Technology |
+|---|---|
+| Language | TypeScript |
+| Frontend | Next.js |
+| Runtime / Package Manager | Node.js / npm |
+| Backend | Node.js / TypeScript |
+| Testing | Playwright, application tests |
+| Web Testing | Burp Suite, browser developer tools |
+| TLS | OpenSSL |
+| Version Control | Git / GitHub |
+
+All planned software and services are free to use for this project. No paid APIs or hosted services are required for the MVP.
 
 ## Project Structure
 
@@ -80,8 +79,8 @@ CookieGuard/
 ├── frontend/
 ├── backend/
 ├── tests/
-├── docs/
 ├── scripts/
+├── docs/
 └── README.md
 ```
 
@@ -98,9 +97,7 @@ CookieGuard/
 
 ## Expected Demonstration
 
-A user will establish a session, inspect the session cookie, run a controlled security scenario, observe the result, apply the appropriate mitigation, and repeat the scenario to verify the change.
-
-All testing will remain inside the controlled lab environment.
+A user will establish a session, inspect its cookie, run a controlled security scenario, observe the result, apply the mitigation, and repeat the scenario to verify the change.
 
 ## Out of Scope
 
@@ -113,12 +110,11 @@ All testing will remain inside the controlled lab environment.
 
 ## Future Enhancements
 
-- JWT security demonstrations
-- Additional authentication/session scenarios
+- JWT security scenarios
+- Additional authentication and session tests
 - Security-header analysis
 - Additional XSS and CSRF experiments
-- More automated browser tests
-- Additional educational modules
+- Expanded automated browser testing
 
 ## Status
 
