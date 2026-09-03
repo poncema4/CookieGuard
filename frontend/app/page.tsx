@@ -97,6 +97,7 @@ export default function Home() {
             <p>Server session created: {session.sessionCreatedAt ?? "unknown"}</p>
             <button type="button" onClick={inspectCookie} disabled={loading} style={{ padding: 10, marginRight: 8 }}>{loading ? "Working..." : "Inspect Session Cookie"}</button>
             <a href="/xss-lab" style={{ display: "inline-block", padding: 10, marginRight: 8 }}>Open HttpOnly + XSS Lab</a>
+            <a href="/csrf-lab" style={{ display: "inline-block", padding: 10, marginRight: 8 }}>Open SameSite + CSRF Lab</a>
             <button type="button" onClick={handleLogout} disabled={loading} style={{ padding: 10 }}>Log out</button>
           </section>
           {inspection && (
