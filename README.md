@@ -70,8 +70,6 @@ Compare Results
 | TLS | OpenSSL |
 | Version Control | Git / GitHub |
 
-All planned software and services are free to use for this project. No paid APIs or hosted services are required for the MVP.
-
 ## Project Structure
 
 ```text
@@ -97,13 +95,13 @@ CookieGuard/
 
 ## Expected Demonstration
 
-A user will establish a session, inspect its cookie, run a controlled security scenario, observe the result, apply the mitigation, and repeat the scenario to verify the change.
+Establish a session, inspect its cookie, run a controlled security scenario, observe the result, apply the mitigation, and repeat the scenario to verify the change.
 
 ## Out of Scope
 
 - Internet-wide or arbitrary website scanning
 - Full penetration-testing automation
-- Production SaaS deployment
+- Production deployment
 - Enterprise vulnerability management
 - Large vulnerability databases
 - Generic security scoring
