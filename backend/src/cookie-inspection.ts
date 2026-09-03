@@ -24,7 +24,7 @@ export const SESSION_COOKIE_NAME = "cookieguard_session";
 export const SESSION_COOKIE_CONFIG: SessionCookieConfig = {
   name: SESSION_COOKIE_NAME,
   path: "/",
-  secure: false,
+  secure: true,
   httpOnly: true,
   sameSite: "Lax",
   expiration: "Session",
@@ -34,7 +34,7 @@ export const COOKIE_EXPLANATIONS: Record<keyof CookieInspection, string> = {
   name: "Identifies the CookieGuard session cookie.",
   domain: "The current lab uses a host-only cookie on localhost because no Domain attribute is set.",
   path: "Controls which URL paths receive the cookie. / makes it available to the application.",
-  secure: "When enabled, the browser sends the cookie only over HTTPS. It is disabled because the current local lab runs over HTTP.",
+  secure: "When enabled, the browser sends the cookie only over HTTPS. CookieGuard enables Secure for the HTTPS lab.",
   httpOnly: "Prevents client-side JavaScript from reading the cookie value, reducing session-cookie exposure during XSS.",
   sameSite: "Controls when the browser sends the cookie with cross-site requests. Lax provides a baseline CSRF protection for this session cookie.",
   expiration: "Session means the browser treats the cookie as a session cookie. An Expires or Max-Age value would make it persistent.",
@@ -72,5 +72,4 @@ export function buildClearedSessionCookie(): string {
   return `${buildSessionCookie("")}; Max-Age=0`;
 }
 
-// Backward-compatible exported view for tests and callers that need the current settings.
 export const SESSION_COOKIE_ATTRIBUTES = getCookieInspection().cookie;
