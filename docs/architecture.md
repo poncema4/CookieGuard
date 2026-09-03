@@ -84,13 +84,13 @@ The session cookie includes `Secure`, which instructs the browser to send it onl
 
 ## Current Development Configuration
 
-The session cookie is configured with `Secure=true`, `HttpOnly=true`, `SameSite=Lax`, path `/`, and a session lifetime. The local frontend and backend both use HTTPS and the same locally trusted certificate for the Phase 6 lab.
+The session cookie is configured with `Secure=true`, `HttpOnly=true`, `SameSite=Lax`, path `/`, and a session lifetime. The local frontend and backend both use HTTPS and the same locally trusted certificate.
 
 ## Local Development
 
 1. Install mkcert and run `mkcert -install` once on the development machine.
 2. Generate the shared certificate with `scripts/generate-dev-certificate.ps1` or `scripts/generate-dev-certificate.sh`.
-3. Start the backend on `https://localhost:4443`.
-4. Start the Next.js frontend using the shared certificate under `certs/`.
-5. Configure Node to trust the local mkcert CA when the frontend proxies HTTPS requests to the backend.
+3. Start the application with `npm run dev`.
+4. The frontend is available at `https://localhost:3000` and the backend at `https://localhost:4443`.
+5. The development runner configures Node to trust the local mkcert CA when the frontend proxies HTTPS requests to the backend.
 6. Inspect the session cookie in browser developer tools and verify `Secure`, `HttpOnly`, and `SameSite=Lax`.
