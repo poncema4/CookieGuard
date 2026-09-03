@@ -2,253 +2,284 @@
 
 **Interactive Cookie & Session Security Laboratory**
 
-> **Course:** App Security & Web Technology  
-> **Project Type:** Final Course MVP / Proof of Concept  
-> **Status:** Planned MVP
+**Course:** App Security & Web Technology  
+**Project:** Final Course MVP / Proof of Concept  
+**Status:** Planned
 
-## Overview
+## 1. Project Overview
 
-CookieGuard is an interactive web security laboratory designed to make cookie and session security understandable through direct experimentation rather than a static security checklist or score.
+CookieGuard is an interactive web-security laboratory focused on one of the most important parts of modern web applications: **cookies, sessions, and the controls that protect them**.
 
-The project will provide a controlled web application environment where users can inspect cookie attributes, observe insecure session behavior, change security controls, and immediately see how those changes affect the application's behavior.
+The project will use a controlled web application to let a user inspect cookie configuration, reproduce selected security problems, apply a mitigation, and observe the change in application behavior.
 
-The central idea is simple:
+The emphasis is not on producing a vulnerability score. The emphasis is on answering a more useful question:
 
-> **Instead of only telling a user that a cookie is insecure, CookieGuard demonstrates why the security control matters.**
+> **What security control is missing, what risk does that create, and what changes when the control is applied?**
 
-The MVP will focus specifically on web application cookies, sessions, authentication-related behavior, and the security controls that protect them.
+The MVP will provide a small set of complete demonstrations rather than attempting to become a general-purpose web vulnerability scanner.
 
-## Course
+## 2. Course Alignment
 
-**Seton Hall University — App Security & Web Technology**
+CookieGuard is designed for **Seton Hall University — App Security & Web Technology**.
 
-CookieGuard is designed around the course topics involving web application security, authentication and sessions, cookie security, XSS, CSRF, HTTPS, Burp Suite-style inspection, and secure session design.
+The project directly connects to course topics including:
 
-## Problem
+- HTTP and web application fundamentals
+- OWASP web application security concepts
+- XSS
+- CSRF
+- Authentication and sessions
+- Cookie security
+- Session hijacking concepts
+- Burp Suite-style request/response inspection
+- HTTPS and secure transport
+- Secure session design
+- Input validation and output handling
 
-Cookie and session security is often presented as a list of attributes such as `Secure`, `HttpOnly`, and `SameSite`. While the attributes are important, simply identifying a missing flag does not demonstrate what the control actually prevents.
+## 3. Problem Statement
 
-CookieGuard addresses this learning gap by creating a controlled environment where security properties can be changed and their effects observed.
+Cookie security is often reduced to a checklist of attributes such as `Secure`, `HttpOnly`, and `SameSite`. A checklist can identify a configuration problem, but it does not necessarily demonstrate the security consequence.
 
-For example, the MVP should be able to demonstrate the difference between a session cookie with and without `HttpOnly`, or show how changing `SameSite` affects a controlled CSRF scenario.
+CookieGuard addresses that gap by connecting the configuration to an observable security scenario.
 
-## Project Goal
+For example:
 
-The goal of CookieGuard is to build a small but functional web security laboratory that connects **web vulnerabilities, security controls, and observable application behavior**.
+```text
+Cookie without HttpOnly
+        ↓
+Controlled XSS scenario
+        ↓
+Client-side JavaScript can access the cookie
+        ↓
+Apply HttpOnly
+        ↓
+Repeat the experiment
+        ↓
+Cookie is no longer exposed through JavaScript
+```
 
-The MVP should allow a user to:
+The same approach will be used for selected CSRF, HTTPS, and cookie-policy demonstrations.
 
-1. Interact with a controlled web application.
-2. Inspect cookies and their security attributes.
-3. Identify insecure or missing cookie controls.
-4. Understand why each control matters.
-5. Run controlled security experiments.
-6. Compare insecure and secure configurations.
-7. Observe the behavioral difference after a mitigation is applied.
+## 4. Project Objectives
 
-## MVP Scope
+The MVP will aim to accomplish the following:
 
-The MVP will concentrate on the following capabilities.
+1. Build a controlled web application with authentication and session behavior.
+2. Inspect and display cookie security attributes.
+3. Identify important cookie/session configuration weaknesses.
+4. Provide an explanation of the security significance of each finding.
+5. Reproduce selected security scenarios in a controlled environment.
+6. Apply a security mitigation and repeat the scenario.
+7. Show the difference between the insecure and protected states.
+8. Provide enough technical evidence that the behavior can be explained at the HTTP/browser level.
 
-### 1. Cookie Inspection
+## 5. MVP Scope
 
-CookieGuard will display relevant properties of cookies used by the controlled application, including:
+### 5.1 Cookie Inspection
 
-- Cookie name
+CookieGuard will inspect cookies associated with the controlled application and present relevant properties such as:
+
+- Name
 - Domain
 - Path
 - `Secure`
 - `HttpOnly`
 - `SameSite`
-- Expiration / lifetime information
-- Session-related purpose where applicable
+- Expiration / lifetime
+- Session versus persistent behavior
 
-### 2. Security Analysis
+### 5.2 Cookie Security Analysis
 
-The application will evaluate cookie configuration against the security concepts being demonstrated and explain notable weaknesses.
+The application will identify selected security weaknesses, including cases such as:
 
-Examples include:
+- Missing `HttpOnly` on a sensitive cookie
+- Missing `Secure` on a cookie intended for HTTPS
+- Weak or missing `SameSite` protection
+- Overly broad cookie scope where relevant
+- Inadequately protected session cookies
 
-- Missing `HttpOnly`
-- Missing `Secure`
-- Weak or missing `SameSite` policy
-- Inappropriate cookie scope
-- Session cookies lacking appropriate protection
+Each finding will explain **why the configuration matters**, not just label it as insecure.
 
-The purpose is educational analysis rather than producing a generic numerical security score.
+### 5.3 Interactive XSS / HttpOnly Demonstration
 
-### 3. Interactive Security Experiments
+A controlled XSS experiment will demonstrate how JavaScript can interact with a cookie when `HttpOnly` is not enabled, followed by the same experiment with `HttpOnly` enabled.
 
-The most important part of the MVP is the ability to demonstrate security controls in action.
+The goal is to demonstrate the security boundary provided by the cookie attribute without targeting any real application.
 
-Planned demonstrations include:
+### 5.4 Interactive CSRF / SameSite Demonstration
 
-#### HttpOnly and XSS
+A controlled CSRF scenario will be used to demonstrate how browser cookie policy affects cross-site requests. The experiment will compare appropriate `SameSite` configurations and explain the resulting behavior.
 
-A controlled XSS scenario will demonstrate the risk of exposing a session-related cookie to client-side JavaScript. The experiment will then enable `HttpOnly` and demonstrate the resulting protection.
+### 5.5 Secure / HTTPS Demonstration
 
-#### SameSite and CSRF
+The project will demonstrate the relationship between HTTPS and the `Secure` cookie attribute using the controlled application. Where appropriate, the project will use browser developer tools and HTTP request/response inspection to make the behavior visible.
 
-A controlled CSRF scenario will compare cookie behavior under different `SameSite` configurations and demonstrate how browser cookie policy affects cross-site requests.
+### 5.6 Educational Explanations
 
-#### Secure Cookies and HTTPS
+For each experiment, CookieGuard will explain:
 
-The project will demonstrate the relationship between the `Secure` attribute and HTTPS by comparing protected and improperly configured cookie behavior in a controlled environment.
+- The security control
+- The threat it addresses
+- The insecure condition
+- The observed behavior
+- The mitigation
+- The expected secure behavior
 
-### 4. Educational Explanations
+## 6. Planned Architecture
 
-Each finding or experiment will explain:
-
-- What the security control is.
-- What threat it addresses.
-- What happens when the control is missing or weakened.
-- What the secure configuration should accomplish.
-- How the observed behavior relates to the underlying web-security concept.
-
-## Planned Workflow
+The MVP will use a clear separation between the user interface, application/API logic, and security-lab scenarios.
 
 ```text
-Controlled Web Application
-          |
-          v
-     Cookie / Session
-       Observation
-          |
-          v
-     CookieGuard Analysis
-          |
-          +--------------------+
-          |                    |
-          v                    v
-   Security Finding     Interactive Experiment
-          |                    |
-          +---------+----------+
-                    |
-                    v
-          Explain Security Control
-                    |
-                    v
-          Apply Secure Configuration
-                    |
-                    v
-            Observe Difference
+                    Browser
+                       |
+                       v
+              Next.js Frontend
+                       |
+                 HTTP / API
+                       |
+                       v
+            Node.js / TypeScript Backend
+                 /           \
+                /             \
+               v               v
+       Cookie Analysis     Lab Scenarios
+               |               |
+               +-------+-------+
+                       |
+                       v
+              Results / Evidence
+                       |
+                       v
+                 User Interface
 ```
 
-## Security Concepts Demonstrated
+The exact implementation may evolve during development, but the separation of concerns will remain clear.
+
+## 7. Tech Stack
+
+| Area | Technology | Purpose |
+|---|---|---|
+| Frontend | **Next.js** | Interactive laboratory interface |
+| Frontend Language | **TypeScript** | Typed UI/application code |
+| Runtime | **Node.js** | Application runtime |
+| Package Manager | **npm** | Dependency and script management |
+| Backend/API | **Node.js + TypeScript** | Cookie analysis, session logic, and lab APIs |
+| Web Framework | **Next.js API routes / server functionality** | HTTP/API handling where appropriate |
+| Styling | **CSS / Next.js styling** | Clear laboratory interface |
+| Testing | **Jest / React Testing Library** | Unit and component testing where useful |
+| Browser Testing | **Playwright** | Repeatable web-security behavior tests |
+| Web Security Testing | **Burp Suite** | Request/response inspection during development and demonstrations |
+| TLS | **OpenSSL** | Local certificate generation and HTTPS testing where needed |
+| Version Control | **Git / GitHub** | Source control and project history |
+
+The MVP will favor a small TypeScript/Node.js stack so the application and its security demonstrations can be developed and understood as one coherent system.
+
+## 8. Planned Repository Structure
+
+The repository will be organized so that the interface, server-side logic, security experiments, tests, and documentation remain easy to locate.
+
+```text
+CookieGuard/
+├── frontend/
+│   ├── app/
+│   ├── components/
+│   └── lib/
+├── backend/
+│   ├── src/
+│   │   ├── api/
+│   │   ├── cookies/
+│   │   ├── sessions/
+│   │   └── labs/
+│   └── tests/
+├── tests/
+├── docs/
+├── scripts/
+└── README.md
+```
+
+The exact folders may be adjusted once implementation begins, but the repository will keep frontend, backend, tests, documentation, and supporting scripts separated by responsibility.
+
+## 9. Security Model
+
+CookieGuard will intentionally include controlled insecure configurations for demonstration purposes. These configurations will exist only inside the project laboratory.
+
+The project will maintain a clear distinction between:
+
+- **Vulnerable demonstration state** — intentionally weakened for testing.
+- **Mitigated state** — configured according to the security objective being demonstrated.
+
+The project will not be designed to scan or attack arbitrary third-party websites.
+
+## 10. Expected Demonstration
+
+A successful MVP demonstration should follow a sequence similar to this:
+
+1. Open the controlled web application.
+2. Authenticate and establish a session.
+3. Inspect the session cookie.
+4. Identify a missing or weak security attribute.
+5. Run the corresponding laboratory experiment.
+6. Observe the insecure behavior.
+7. Apply the appropriate mitigation.
+8. Repeat the experiment.
+9. Observe the changed behavior.
+10. Explain the security principle demonstrated.
+
+This gives the project a concrete beginning, attack/test condition, mitigation, and observable result.
+
+## 11. Course Concepts Demonstrated
 
 The MVP is intended to demonstrate practical understanding of:
 
-- HTTP and web application behavior
+- HTTP request/response behavior
+- Web application architecture
 - Cookies and sessions
-- Authentication and session management
+- Authentication/session management
 - `Secure`
 - `HttpOnly`
 - `SameSite`
-- Reflected/stored/DOM XSS concepts where applicable to the controlled demonstrations
+- XSS
 - CSRF
-- HTTPS and secure transport
+- HTTPS/TLS
 - Secure session design
+- Web security testing
+- Request/response inspection
 - Input and output security considerations
-- Web security testing and observation
 
-## Design Principles
+## 12. Out of Scope for the MVP
 
-CookieGuard will follow several principles throughout development:
+The first version will intentionally avoid becoming a commercial web-security platform.
 
-### Demonstration over Scoring
+Out of scope for the MVP:
 
-The project will not revolve around a generic security score. Findings should be actionable and connected to observable behavior.
-
-### Controlled Testing
-
-All security experiments will run against applications and scenarios intentionally created for the project. The project is not intended to scan or attack arbitrary third-party websites.
-
-### Secure-by-Design Where Appropriate
-
-The application will intentionally contain controlled insecure configurations for educational demonstrations while keeping the overall laboratory environment isolated and clearly separated from real-world targets.
-
-### Clear Separation of Vulnerability and Mitigation
-
-Where practical, demonstrations will show both states:
-
-```text
-Insecure Configuration
-        ↓
-Security Behavior / Vulnerability
-        ↓
-Apply Mitigation
-        ↓
-Secure Configuration
-        ↓
-Changed Behavior
-```
-
-## Planned MVP Architecture
-
-The final implementation details will be selected during development, but the MVP is expected to contain three primary areas:
-
-- **Controlled Web Application** — provides authentication, sessions, cookies, and intentionally configurable security behavior.
-- **CookieGuard Analysis Layer** — inspects cookie/session properties and produces security explanations.
-- **Interactive Laboratory Interface** — allows users to select experiments, change security configurations, and observe results.
-
-The architecture will remain intentionally small enough to function as a course MVP while still demonstrating real application-security concepts.
-
-## Expected Demonstration
-
-A final MVP demonstration should be able to show a sequence similar to:
-
-1. Log into the controlled application.
-2. Inspect the issued session cookie.
-3. Identify a missing security attribute.
-4. Run the corresponding controlled experiment.
-5. Observe the insecure behavior.
-6. Enable the appropriate security control.
-7. Repeat the experiment.
-8. Observe the mitigation taking effect.
-9. Explain why the security control changed the result.
-
-This demonstration is intended to show understanding rather than simply display a vulnerability label.
-
-## Out of Scope for the MVP
-
-To keep the project aligned with the professor's MVP/proof-of-concept requirement, the initial version will intentionally avoid becoming a full commercial web-security platform.
-
-The following are not required for the MVP:
-
-- Large-scale Internet-wide scanning
-- Automated vulnerability discovery across arbitrary websites
-- Production SaaS deployment
-- Comprehensive penetration-testing automation
-- A large vulnerability database
-- Complex user management
-- Enterprise-scale monitoring
+- Internet-wide or large-scale scanning
+- Automated testing of arbitrary third-party websites
+- Full penetration-testing automation
+- Enterprise vulnerability management
 - A universal security score
+- Large-scale user/account management
+- Production SaaS deployment
+- A large vulnerability database
 
-Additional capabilities may be considered only after the core laboratory works reliably.
+The project will first prove that the core laboratory demonstrations work reliably.
 
-## Future Enhancements
+## 13. Future Enhancements
 
-Potential future enhancements, if time permits, include:
+If the MVP is completed with sufficient time remaining, possible additions include:
 
-- Additional session and authentication experiments
 - JWT security demonstrations
+- Additional authentication/session experiments
 - Security-header analysis
-- Burp Suite integration or export workflows
-- Additional XSS/CSRF scenarios
-- More advanced cookie scope demonstrations
-- Automated test cases for security configurations
+- More XSS and CSRF scenarios
+- Additional cookie-scope demonstrations
+- More automated browser tests
+- Burp Suite workflow support
 - Additional educational modules
 
-These enhancements are secondary to completing and demonstrating the core MVP.
+These enhancements are secondary to the core MVP.
 
-## Development Philosophy
+## 14. Project Definition
 
-CookieGuard will be developed incrementally. The project will prioritize a small number of complete, understandable security demonstrations over a large collection of partially implemented features.
+CookieGuard is ultimately a **web-security laboratory, not a score generator**. Its value comes from demonstrating the relationship between a web security weakness, the underlying browser/application behavior, and the mitigation that changes that behavior.
 
-The finished MVP should be something that can be demonstrated live and explained technically from the underlying HTTP request and response behavior through the security control and resulting application behavior.
-
-## Academic Context
-
-This repository represents the project concept and implementation for **App Security & Web Technology**. The project is intended to demonstrate practical application of course concepts through an original proof of concept.
-
-Implementation, testing, documentation, and final presentation materials will be developed as the project progresses.
+The finished MVP should be small enough to complete and explain thoroughly while providing a technically meaningful demonstration of application-security concepts from the course.
