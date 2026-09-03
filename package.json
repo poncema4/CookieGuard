@@ -1,0 +1,15 @@
+{
+  "name": "cookieguard",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Interactive Cookie & Session Security Lab",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=@cookieguard/backend & npm run dev --workspace=@cookieguard/frontend",
+    "build": "npm run build --workspace=@cookieguard/backend && npm run build --workspace=@cookieguard/frontend",
+    "start": "npm run start --workspace=@cookieguard/backend & npm run start --workspace=@cookieguard/frontend"
+  }
+}

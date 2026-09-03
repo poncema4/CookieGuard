@@ -1,17 +1,13 @@
 # CookieGuard
-
 **Interactive Cookie & Session Security Lab**
 
 ## Overview
-
 CookieGuard is a controlled web-security lab focused on cookies, sessions, and browser security controls. The application will let users inspect cookie settings, run security scenarios, apply mitigations, and observe the difference.
 
 ## Problem
-
 Cookie attributes such as `Secure`, `HttpOnly`, and `SameSite` are easy to treat as a checklist. CookieGuard connects those settings to actual web-application behavior so their security impact can be demonstrated.
 
 ## Objectives
-
 - Inspect important cookie and session attributes.
 - Identify selected configuration weaknesses.
 - Demonstrate the purpose of `Secure`, `HttpOnly`, and `SameSite`.
@@ -19,7 +15,6 @@ Cookie attributes such as `Secure`, `HttpOnly`, and `SameSite` are easy to treat
 - Compare vulnerable and mitigated configurations.
 
 ## MVP Scope
-
 - Small authenticated web application.
 - Cookie and session inspection.
 - Security analysis with concise explanations.
@@ -29,7 +24,6 @@ Cookie attributes such as `Secure`, `HttpOnly`, and `SameSite` are easy to treat
 - Browser and request evidence for each result.
 
 ## Architecture / Workflow
-
 ```text
 Browser
   ↓
@@ -58,7 +52,6 @@ Compare Results
 ```
 
 ## Tech Stack
-
 | Area | Technology |
 |---|---|
 | Language | TypeScript |
@@ -71,19 +64,27 @@ Compare Results
 | Version Control | Git / GitHub |
 
 ## Project Structure
-
 ```text
 CookieGuard/
 ├── frontend/
+│   ├── app/
+│   ├── package.json
+│   ├── next.config.ts
+│   └── tsconfig.json
 ├── backend/
-├── tests/
+│   ├── src/
+│   ├── package.json
+│   └── tsconfig.json
 ├── scripts/
+├── tests/
 ├── docs/
+│   └── architecture.md
+├── .gitignore
+├── package.json
 └── README.md
 ```
 
 ## Security Concepts
-
 - HTTP and web application behavior
 - Cookies and sessions
 - Authentication and session management
@@ -94,11 +95,9 @@ CookieGuard/
 - Web-security testing
 
 ## Expected Demonstration
-
 Establish a session, inspect its cookie, run a controlled security scenario, observe the result, apply the mitigation, and repeat the scenario to verify the change.
 
 ## Out of Scope
-
 - Internet-wide or arbitrary website scanning
 - Full penetration-testing automation
 - Production deployment
@@ -107,7 +106,6 @@ Establish a session, inspect its cookie, run a controlled security scenario, obs
 - Generic security scoring
 
 ## Future Enhancements
-
 - JWT security scenarios
 - Additional authentication and session tests
 - Security-header analysis
@@ -115,5 +113,4 @@ Establish a session, inspect its cookie, run a controlled security scenario, obs
 - Expanded automated browser testing
 
 ## Status
-
-Planned MVP. Implementation will begin with the application requirements and architecture.
+Phase 1 complete: project foundation and local development architecture established. Security functionality will be implemented in subsequent phases.
