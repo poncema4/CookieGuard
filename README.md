@@ -89,6 +89,7 @@ CookieGuard/
 │   │   ├── xss-lab/
 │   │   ├── csrf-lab/
 │   │   ├── secure-lab/
+│   │   ├── globals.css
 │   │   └── icon.svg
 │   ├── package.json
 │   ├── package-lock.json
@@ -163,8 +164,16 @@ For the `Secure` scenario, the local frontend and backend run over HTTPS using o
 - Additional XSS and CSRF experiments
 - Expanded automated browser testing
 
-## Status
-Phase 7 — Evidence & Testing is in progress. Automated verification now covers the backend test suite plus backend and frontend production builds, with a documented browser evidence checklist for the Cookie, XSS, CSRF, and HTTPS experiments.
+## Verification
+Run the automated verification from the repository root:
+
+```text
+npm run verify
+```
+
+The command runs the backend security/unit tests and production builds for both application layers. It should finish with `CookieGuard verification checks passed.`
+
+For local development and browser-based testing, see the setup and testing documentation.
 
 ## Documentation
 - [Architecture](docs/architecture.md)
