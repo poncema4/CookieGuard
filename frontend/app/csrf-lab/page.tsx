@@ -4,7 +4,8 @@ import { useState } from "react";
 const TARGET_ORIGIN = process.env.NEXT_PUBLIC_COOKIEGUARD_BACKEND_ORIGIN as string;
 
 export default function CsrfLabPage() {
-  const [sameSite, setSameSite] = useState<"Lax" | "Strict">("Lax");
+  const [sameSite, setSameSite] = useState<"Lax" | "Strict">("Strict");
+  const expectedResult = sameSite === "Strict" ? "BLOCKED" : "BLOCKED (normally)";
 
   return (
     <main className="page">
@@ -69,8 +70,13 @@ export default function CsrfLabPage() {
                 <button className="btn primary" type="submit">Run cross-site POST</button>
               </form>
               <div className="status" style={{ marginTop: 16 }}>
-                Expected with SameSite={sameSite}: <strong>BLOCKED</strong>
+                Expected with SameSite={sameSite}: <strong>{expectedResult}</strong>
               </div>
+              {sameSite === "Lax" && (
+                <p style={{ marginTop: 8 }}>
+                  Lax can have browser-specific temporary POST behavior, so Strict is the deterministic blocked case for this lab.
+                </p>
+              )}
             </div>
           </div>
         </div>
