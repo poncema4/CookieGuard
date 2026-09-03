@@ -3,9 +3,8 @@ import { buildClearedSessionCookie, buildSessionCookie, getCookieInspection, SES
 import { buildClearedXssLabCookie, createXssLabCookie, XSS_LAB_COOKIE_NAME } from "./xss-lab.js";
 import { buildClearedCsrfLabCookie, createCsrfLabCookie, CSRF_LAB_COOKIE_NAME, isCsrfLabCookiePresent, type CsrfSameSite } from "./csrf-lab.js";
 import { createHttpsServer } from "./https.js";
+import { BACKEND_ORIGIN, BACKEND_PORT } from "../../scripts/dev-config.mjs";
 import type { IncomingMessage, ServerResponse } from "node:http";
-
-const port = 4443;
 
 function parseCookies(request: IncomingMessage): Record<string, string> {
   const header = request.headers.cookie;
@@ -50,7 +49,7 @@ function setSessionCookie(response: ServerResponse, sessionId: string) {
 }
 
 const server = createHttpsServer(async (request, response) => {
-  const url = new URL(request.url ?? "/", `https://${request.headers.host ?? "localhost:4443"}`);
+  const url = new URL(request.url ?? "/", BACKEND_ORIGIN);
   const cookies = parseCookies(request);
   const session = getSession(cookies[SESSION_COOKIE_NAME]);
 
@@ -139,6 +138,6 @@ const server = createHttpsServer(async (request, response) => {
   sendJson(response, 404, { error: "Not found" });
 });
 
-server.listen(port, () => {
-  console.log(`CookieGuard backend listening on https://localhost:${port}`);
+server.listen(BACKEND_PORT, () => {
+  console.log(`CookieGuard backend listening on ${BACKEND_ORIGIN}`);
 });
