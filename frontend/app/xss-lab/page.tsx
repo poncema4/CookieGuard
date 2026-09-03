@@ -1,94 +1,10 @@
 "use client";
 
 import { useRef, useState } from "react";
-
-const XSS_PAYLOAD = `<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" onload="document.getElementById('cookie-output').textContent = document.cookie">`;
-
-type LabMode = "none" | "vulnerable" | "protected";
-
-export default function XssLab() {
-  const [mode, setMode] = useState<LabMode>("none");
-  const [result, setResult] = useState("No XSS scenario has been run.");
-  const [loading, setLoading] = useState(false);
-  const payloadRef = useRef<HTMLDivElement>(null);
-
-  async function configureCookie(httpOnly: boolean) {
-    setLoading(true);
-    setResult("Configuring lab cookie...");
-    try {
-      const response = await fetch("/api/xss-lab/cookie", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ httpOnly }),
-      });
-      const data = (await response.json()) as { error?: string; mode?: LabMode };
-      if (!response.ok) {
-        setResult(data.error ?? "Unable to configure the lab cookie.");
-        return;
-      }
-      setMode(data.mode ?? "none");
-      setResult(httpOnly ? "Protected mode enabled. Run the same XSS payload." : "Vulnerable mode enabled. Run the XSS payload.");
-    } catch {
-      setResult("Backend unavailable.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function runXss() {
-    if (!payloadRef.current) return;
-    setResult("Executing controlled XSS payload...");
-    payloadRef.current.innerHTML = XSS_PAYLOAD;
-  }
-
-  async function clearLab() {
-    setLoading(true);
-    try {
-      await fetch("/api/xss-lab/cookie", { method: "DELETE" });
-      setMode("none");
-      setResult("Lab cookie cleared.");
-      if (payloadRef.current) payloadRef.current.replaceChildren();
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <main style={{ maxWidth: 820, margin: "0 auto", padding: 48, fontFamily: "sans-serif" }}>
-      <p><a href="/">← Back to CookieGuard</a></p>
-      <h1>HttpOnly + XSS Lab</h1>
-      <p>Demonstrate how HttpOnly changes whether client-side JavaScript can read a lab cookie.</p>
-
-      <section style={{ border: "1px solid #ccc", borderRadius: 8, padding: 20, marginTop: 24 }}>
-        <h2>1. Choose Cookie Configuration</h2>
-        <p>This lab uses a separate demonstration cookie. The authenticated session cookie is not modified.</p>
-        <button type="button" onClick={() => void configureCookie(false)} disabled={loading} style={{ padding: 10, marginRight: 8 }}>
-          Enable Vulnerable Mode
-        </button>
-        <button type="button" onClick={() => void configureCookie(true)} disabled={loading} style={{ padding: 10 }}>
-          Enable Protected Mode
-        </button>
-        <p><strong>Current mode:</strong> {mode === "none" ? "Not configured" : mode}</p>
-      </section>
-
-      <section style={{ border: "1px solid #ccc", borderRadius: 8, padding: 20, marginTop: 20 }}>
-        <h2>2. Run Controlled XSS</h2>
-        <p>The payload below intentionally injects an image event handler that reads <code>document.cookie</code>.</p>
-        <pre style={{ whiteSpace: "pre-wrap", background: "#f5f5f5", padding: 12, borderRadius: 6 }}>{XSS_PAYLOAD}</pre>
-        <button type="button" onClick={runXss} disabled={mode === "none" || loading} style={{ padding: 10 }}>
-          Run XSS Payload
-        </button>
-        <div ref={payloadRef} aria-hidden="true" />
-        <h3>JavaScript-visible cookies</h3>
-        <pre id="cookie-output" style={{ minHeight: 48, background: "#f5f5f5", padding: 12, borderRadius: 6, whiteSpace: "pre-wrap" }}>{result}</pre>
-      </section>
-
-      <section style={{ marginTop: 20 }}>
-        <h2>Expected Result</h2>
-        <p><strong>Vulnerable mode:</strong> the lab cookie is not HttpOnly, so the XSS payload can read it through <code>document.cookie</code>.</p>
-        <p><strong>Protected mode:</strong> the lab cookie is HttpOnly, so the same payload cannot read that cookie.</p>
-        <button type="button" onClick={() => void clearLab()} disabled={loading} style={{ padding: 10 }}>Clear Lab Cookie</button>
-      </section>
-    </main>
-  );
-}
+const XSS_PAYLOAD=`<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" onload="document.getElementById('cookie-output').textContent = document.cookie">`;
+type LabMode="none"|"vulnerable"|"protected";
+export default function XssLab(){const[mode,setMode]=useState<LabMode>("none");const[result,setResult]=useState("No XSS scenario has been run.");const[loading,setLoading]=useState(false);const payloadRef=useRef<HTMLDivElement>(null);
+ async function configureCookie(httpOnly:boolean){setLoading(true);setResult("Configuring lab cookie...");try{const r=await fetch("/api/xss-lab/cookie",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({httpOnly})});const d=(await r.json()) as{error?:string;mode?:LabMode};if(!r.ok){setResult(d.error??"Unable to configure the lab cookie.");return}setMode(d.mode??"none");setResult(httpOnly?"Protected mode enabled. Run the same XSS payload.":"Vulnerable mode enabled. Run the XSS payload.")}catch{setResult("Backend unavailable.")}finally{setLoading(false)}}
+ function runXss(){if(!payloadRef.current)return;setResult("Executing controlled XSS payload...");payloadRef.current.innerHTML=XSS_PAYLOAD}
+ async function clearLab(){setLoading(true);try{await fetch("/api/xss-lab/cookie",{method:"DELETE"});setMode("none");setResult("Lab cookie cleared.");payloadRef.current?.replaceChildren()}finally{setLoading(false)}}
+ return <main className="page"><a className="back" href="/">← Back to overview</a><div className="eyebrow">Experiment 01 · Cookie access</div><h1>HttpOnly + XSS</h1><p className="hero-copy">Use the same controlled payload twice. The only meaningful change is whether the demonstration cookie is readable by JavaScript.</p><div className="callout"><p>This lab uses a separate demonstration cookie. The authenticated CookieGuard session is never intentionally weakened.</p></div><section className="section split"><div className="panel"><div className="eyebrow">01</div><h2>Choose the control</h2><p>Set the lab cookie to vulnerable or protected mode.</p><div className="control-row"><button className="btn danger" onClick={()=>void configureCookie(false)} disabled={loading}>Vulnerable</button><button className="btn primary" onClick={()=>void configureCookie(true)} disabled={loading}>Protected</button></div><div className="status">Current mode: {mode==="none"?"Not configured":mode}</div></div><div className="panel"><div className="eyebrow">02</div><h2>Run the payload</h2><p>The payload attempts to read <code>document.cookie</code>.</p><button className="btn" onClick={runXss} disabled={mode==="none"||loading}>Run XSS payload</button><div ref={payloadRef} aria-hidden="true"/><div style={{marginTop:14}}><h3>JavaScript-visible cookies</h3><div id="cookie-output" className="result">{result}</div></div></div></section><section className="panel section"><div className="section-head"><div><div className="eyebrow">Compare</div><h2>What should change?</h2></div></div><div className="split"><div><h3>Vulnerable</h3><p>The lab cookie lacks <code>HttpOnly</code>, so the controlled payload can read it through JavaScript.</p></div><div><h3>Protected</h3><p>The lab cookie has <code>HttpOnly</code>, so the same payload cannot read that cookie.</p></div></div><button className="btn" onClick={()=>void clearLab()} disabled={loading} style={{marginTop:20}}>Clear lab cookie</button></section></main>}
