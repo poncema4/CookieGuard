@@ -78,7 +78,7 @@ Compare Results
 | Backend | Node.js / TypeScript |
 | Testing | Node.js test runner, Playwright, application tests |
 | Web Testing | Burp Suite, browser developer tools |
-| TLS | OpenSSL |
+| TLS | mkcert |
 | Version Control | Git / GitHub |
 
 ## Project Structure
@@ -108,12 +108,13 @@ CookieGuard/
 │   │   ├── xss-lab.test.ts
 │   │   ├── csrf-lab.test.ts
 │   │   └── https.test.ts
-│   ├── certs/
-│   │   └── (generated locally)
 │   ├── package.json
 │   └── tsconfig.json
+├── certs/
+│   └── (generated locally; never committed)
 ├── scripts/
-│   └── generate-dev-certificate.ps1
+│   ├── generate-dev-certificate.ps1
+│   └── generate-dev-certificate.sh
 ├── docs/
 │   └── architecture.md
 ├── .gitignore
@@ -139,7 +140,7 @@ For the `HttpOnly` scenario, CookieGuard uses a separate demonstration cookie so
 
 For the `SameSite` scenario, CookieGuard uses a separate CSRF lab cookie. A same-site POST can include the cookie, while a controlled cross-site POST is blocked when the cookie uses `SameSite=Lax` or `SameSite=Strict`.
 
-For the `Secure` scenario, the local frontend and backend run over HTTPS using a locally generated development certificate. The authenticated session cookie includes `Secure`, `HttpOnly`, and `SameSite=Lax`. Browser developer tools and the login response can be used to verify the resulting cookie attributes and HTTPS transport.
+For the `Secure` scenario, the local frontend and backend run over HTTPS using one locally trusted mkcert development certificate stored under `certs/`. The authenticated session cookie includes `Secure`, `HttpOnly`, and `SameSite=Lax`. Browser developer tools and the login response can be used to verify the resulting cookie attributes and HTTPS transport.
 
 ## Out of Scope
 - Internet-wide or arbitrary website scanning
@@ -157,4 +158,4 @@ For the `Secure` scenario, the local frontend and backend run over HTTPS using a
 - Expanded automated browser testing
 
 ## Status
-Phase 6 implementation complete: CookieGuard now runs its backend and frontend over local HTTPS, enables the `Secure` session-cookie attribute, includes local certificate generation, and adds a Secure + HTTPS demonstration lab. Local verification is required before Phase 7.
+Phase 6 implementation complete: CookieGuard now runs its backend and frontend over local HTTPS, enables the `Secure` session-cookie attribute, uses a shared local development certificate, and includes a Secure + HTTPS demonstration lab. Local verification is required before Phase 7.
