@@ -2,7 +2,7 @@
 **Interactive Cookie & Session Security Lab**
 
 ## Overview
-CookieGuard is a controlled web-security lab focused on cookies, sessions, and browser security controls. The application will let users inspect cookie settings, run security scenarios, apply mitigations, and observe the difference.
+CookieGuard is a controlled web-security lab focused on cookies, sessions, and browser security controls. The application lets users authenticate, inspect cookie settings, run security scenarios, apply mitigations, and observe the difference.
 
 ## Problem
 Cookie attributes such as `Secure`, `HttpOnly`, and `SameSite` are easy to treat as a checklist. CookieGuard connects those settings to actual web-application behavior so their security impact can be demonstrated.
@@ -16,6 +16,8 @@ Cookie attributes such as `Secure`, `HttpOnly`, and `SameSite` are easy to treat
 
 ## MVP Scope
 - Small authenticated web application.
+- Demo login and logout flow.
+- Server-side session storage and session cookie.
 - Cookie and session inspection.
 - Security analysis with concise explanations.
 - Controlled `HttpOnly` + XSS scenario.
@@ -30,11 +32,23 @@ Browser
 Next.js Frontend
   ↓
 Node.js / TypeScript Backend
+  ├── Authentication / Session Logic
   ├── Cookie Analysis
-  ├── Session Logic
   └── Security Scenarios
   ↓
 Results / Evidence
+```
+
+```text
+Login
+  ↓
+Server creates session
+  ↓
+Session cookie returned to browser
+  ↓
+Authenticated requests use session
+  ↓
+Logout removes server session and expires cookie
 ```
 
 ```text
@@ -58,7 +72,7 @@ Compare Results
 | Frontend | Next.js |
 | Runtime / Package Manager | Node.js / npm |
 | Backend | Node.js / TypeScript |
-| Testing | Playwright, application tests |
+| Testing | Node.js test runner, Playwright, application tests |
 | Web Testing | Burp Suite, browser developer tools |
 | TLS | OpenSSL |
 | Version Control | Git / GitHub |
@@ -69,18 +83,23 @@ CookieGuard/
 ├── frontend/
 │   ├── app/
 │   ├── package.json
+│   ├── package-lock.json
 │   ├── next.config.ts
 │   └── tsconfig.json
 ├── backend/
 │   ├── src/
+│   │   ├── server.ts
+│   │   └── session.ts
+│   ├── tests/
+│   │   └── session.test.ts
 │   ├── package.json
+│   ├── package-lock.json
 │   └── tsconfig.json
-├── scripts/
-├── tests/
 ├── docs/
 │   └── architecture.md
 ├── .gitignore
 ├── package.json
+├── package-lock.json
 └── README.md
 ```
 
@@ -113,4 +132,4 @@ Establish a session, inspect its cookie, run a controlled security scenario, obs
 - Expanded automated browser testing
 
 ## Status
-Phase 1 complete: project foundation and local development architecture established. Security functionality will be implemented in subsequent phases.
+Phase 2 implementation complete: demo authentication, server-side sessions, session cookie handling, logout, and backend session tests are implemented. Local verification is required before Phase 3.
