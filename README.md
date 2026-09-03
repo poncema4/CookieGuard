@@ -192,8 +192,8 @@ CookieGuard/
 │   │   ├── xss-lab.test.ts
 │   │   ├── csrf-lab.test.ts
 │   │   └── https.test.ts
-│   │   ├── package.json
-│   │   └── tsconfig.json
+│   ├── package.json
+│   └── tsconfig.json
 ├── certs/
 │   └── (generated locally; never committed)
 ├── scripts/
@@ -243,4 +243,4 @@ For the `Secure` scenario, the local frontend and backend run over HTTPS using o
 - Expanded automated browser testing
 
 ## Status
-Phase 6 implementation and local verification complete. CookieGuard runs its backend and frontend over local HTTPS, enables the `Secure` session-cookie attribute, uses a shared local development certificate, and includes a Secure + HTTPS demonstration lab. The root development command supports concurrent Windows and Linux development workflows.
+Phase 6 implementation and local verification complete. CookieGuard runs its backend and frontend over local HTTPS, enables the `Secure` session-cookie attribute, uses a shared local development certificate, includes a Secure + HTTPS demonstration lab, and provides a cross-platform root development command for Windows and Linux.
