@@ -69,90 +69,6 @@ Run Again
 Compare Results
 ```
 
-## Local Development
-CookieGuard uses HTTPS locally for the Secure-cookie lab. The frontend and backend use one mkcert development certificate stored under `certs/`. The certificate and private key are generated locally and are not committed to Git.
-
-### Prerequisites
-- Node.js 24 or a current Node.js release that supports `--use-system-ca`.
-- npm.
-- mkcert.
-- Git.
-
-### First-time certificate setup
-Install and trust mkcert's local certificate authority once, then generate the CookieGuard certificate.
-
-**Windows PowerShell**
-```powershell
-mkcert -install
-.\scripts\generate-dev-certificate.ps1
-```
-
-**Linux Bash**
-```bash
-mkcert -install
-chmod +x ./scripts/generate-dev-certificate.sh
-./scripts/generate-dev-certificate.sh
-```
-
-The generated files are:
-```text
-certs/
-├── localhost.pem
-└── localhost-key.pem
-```
-
-### Start CookieGuard
-From the repository root:
-
-```text
-CookieGuard/
-```
-
-Run:
-```text
-npm install
-npm run dev
-```
-
-The root development runner starts both workspaces concurrently on Windows and Linux:
-- Frontend: `https://localhost:3000`
-- Backend: `https://localhost:4443`
-
-The development runner also starts the frontend Node process with `--use-system-ca` so the Next.js HTTPS proxy can trust the local mkcert certificate. No `NODE_TLS_REJECT_UNAUTHORIZED=0` setting is required.
-
-If you prefer to run the workspaces separately, use two terminals:
-
-**Windows PowerShell**
-```powershell
-cd .\backend
-npm run dev
-```
-
-```powershell
-cd .\frontend
-$env:NODE_OPTIONS="--use-system-ca"
-npm run dev
-```
-
-**Linux Bash**
-```bash
-cd backend
-npm run dev
-```
-
-```bash
-cd frontend
-NODE_OPTIONS="--use-system-ca" npm run dev
-```
-
-### HTTPS verification
-Open:
-```text
-https://localhost:3000
-```
-
-Use the Secure + HTTPS Lab to confirm the HTTPS backend connection. After logging in, browser developer tools can be used to verify that the session cookie includes `Secure`, `HttpOnly`, `SameSite=Lax`, and `Path=/`.
-
 ## Tech Stack
 | Area | Technology |
 |---|---|
@@ -201,7 +117,8 @@ CookieGuard/
 │   ├── generate-dev-certificate.ps1
 │   └── generate-dev-certificate.sh
 ├── docs/
-│   └── architecture.md
+│   ├── architecture.md
+│   └── setup.md
 ├── .gitignore
 ├── package.json
 ├── package-lock.json
@@ -244,3 +161,7 @@ For the `Secure` scenario, the local frontend and backend run over HTTPS using o
 
 ## Status
 Phase 6 implementation and local verification complete. CookieGuard runs its backend and frontend over local HTTPS, enables the `Secure` session-cookie attribute, uses a shared local development certificate, includes a Secure + HTTPS demonstration lab, and provides a cross-platform root development command for Windows and Linux.
+
+## Documentation
+- [Architecture](docs/architecture.md)
+- [Setup](docs/setup.md)
