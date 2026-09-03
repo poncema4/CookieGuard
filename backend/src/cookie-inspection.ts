@@ -32,7 +32,7 @@ export const SESSION_COOKIE_CONFIG: SessionCookieConfig = {
 
 export const COOKIE_EXPLANATIONS: Record<keyof CookieInspection, string> = {
   name: "Identifies the CookieGuard session cookie.",
-  domain: "The current lab uses a host-only cookie on localhost because no Domain attribute is set.",
+  domain: "No Domain attribute is set, so the cookie is host-only and belongs to the current host.",
   path: "Controls which URL paths receive the cookie. / makes it available to the application.",
   secure: "When enabled, the browser sends the cookie only over HTTPS. CookieGuard enables Secure for the HTTPS lab.",
   httpOnly: "Prevents client-side JavaScript from reading the cookie value, reducing session-cookie exposure during XSS.",
@@ -45,7 +45,7 @@ export function getCookieInspection(): { cookie: CookieInspection; analysis: typ
   return {
     cookie: {
       name: SESSION_COOKIE_CONFIG.name,
-      domain: "localhost (host-only)",
+      domain: "localhost",
       path: SESSION_COOKIE_CONFIG.path,
       secure: SESSION_COOKIE_CONFIG.secure,
       httpOnly: SESSION_COOKIE_CONFIG.httpOnly,
