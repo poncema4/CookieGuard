@@ -69,25 +69,28 @@ The CSRF lab uses a separate `cookieguard_csrf_lab` cookie and never changes the
 ```text
 Browser
    ↓ HTTPS
-Next.js Frontend
+Next.js Frontend (localhost:3000)
    ↓ HTTPS
-Node.js Backend
+Node.js Backend (localhost:4443)
    ↓
 Set-Cookie: Secure; HttpOnly; SameSite=Lax
 ```
 
-The backend listens on `https://localhost:4443` and the Next.js development server runs with HTTPS enabled. A local OpenSSL-generated certificate is used for the development lab. The certificate and private key remain local and are ignored by Git.
+The backend listens on `https://localhost:4443` and the Next.js development server runs with the same local certificate and key. The certificate pair is generated with mkcert and stored in the single repository-level `certs/` directory.
 
-The session cookie now includes `Secure`, which instructs the browser to send it only over HTTPS. HTTPS provides encrypted transport; the `Secure` attribute is the browser-side cookie control that prevents the session cookie from being sent over an HTTP connection.
+The certificate and private key are machine-specific development material and are ignored by Git. The mkcert root CA private key is managed by mkcert outside the repository and must never be copied into the project or committed.
+
+The session cookie includes `Secure`, which instructs the browser to send it only over HTTPS. HTTPS provides encrypted transport; the `Secure` attribute is the browser-side cookie control that prevents the session cookie from being sent over an HTTP connection.
 
 ## Current Development Configuration
 
-The session cookie is configured with `Secure=true`, `HttpOnly=true`, `SameSite=Lax`, path `/`, and a session lifetime. The local frontend and backend both use HTTPS for the Phase 6 lab.
+The session cookie is configured with `Secure=true`, `HttpOnly=true`, `SameSite=Lax`, path `/`, and a session lifetime. The local frontend and backend both use HTTPS and the same locally trusted certificate for the Phase 6 lab.
 
 ## Local Development
 
-1. Generate the local certificate with `scripts/generate-dev-certificate.ps1`.
-2. Start the backend on `https://localhost:4443`.
-3. Start the Next.js frontend with its experimental HTTPS development server.
-4. Accept the local development certificate warning in the browser.
-5. Inspect the session cookie in browser developer tools and verify `Secure`, `HttpOnly`, and `SameSite=Lax`.
+1. Install mkcert and run `mkcert -install` once on the development machine.
+2. Generate the shared certificate with `scripts/generate-dev-certificate.ps1` or `scripts/generate-dev-certificate.sh`.
+3. Start the backend on `https://localhost:4443`.
+4. Start the Next.js frontend using the shared certificate under `certs/`.
+5. Configure Node to trust the local mkcert CA when the frontend proxies HTTPS requests to the backend.
+6. Inspect the session cookie in browser developer tools and verify `Secure`, `HttpOnly`, and `SameSite=Lax`.
