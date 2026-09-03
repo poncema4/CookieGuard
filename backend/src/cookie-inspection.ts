@@ -9,17 +9,25 @@ export type CookieInspection = {
   persistent: boolean;
 };
 
+type SessionCookieConfig = {
+  name: string;
+  path: string;
+  secure: boolean;
+  httpOnly: boolean;
+  sameSite: "Lax" | "Strict" | "None";
+  expiration: "Session" | string;
+};
+
 export const SESSION_COOKIE_NAME = "cookieguard_session";
 
-export const SESSION_COOKIE_ATTRIBUTES: CookieInspection = {
+// Single source of truth for the session-cookie settings used by the lab.
+export const SESSION_COOKIE_CONFIG: SessionCookieConfig = {
   name: SESSION_COOKIE_NAME,
-  domain: "localhost (host-only)",
   path: "/",
   secure: false,
   httpOnly: true,
   sameSite: "Lax",
   expiration: "Session",
-  persistent: false,
 };
 
 export const COOKIE_EXPLANATIONS: Record<keyof CookieInspection, string> = {
@@ -33,17 +41,36 @@ export const COOKIE_EXPLANATIONS: Record<keyof CookieInspection, string> = {
   persistent: "Indicates whether the cookie has an explicit lifetime beyond the browser session.",
 };
 
-export function buildSessionCookie(sessionId: string): string {
-  return `${SESSION_COOKIE_NAME}=${encodeURIComponent(sessionId)}; Path=/; HttpOnly; SameSite=Lax`;
-}
-
-export function buildClearedSessionCookie(): string {
-  return `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`;
-}
-
-export function getCookieInspection() {
+export function getCookieInspection(): { cookie: CookieInspection; analysis: typeof COOKIE_EXPLANATIONS } {
   return {
-    cookie: SESSION_COOKIE_ATTRIBUTES,
+    cookie: {
+      name: SESSION_COOKIE_CONFIG.name,
+      domain: "localhost (host-only)",
+      path: SESSION_COOKIE_CONFIG.path,
+      secure: SESSION_COOKIE_CONFIG.secure,
+      httpOnly: SESSION_COOKIE_CONFIG.httpOnly,
+      sameSite: SESSION_COOKIE_CONFIG.sameSite,
+      expiration: SESSION_COOKIE_CONFIG.expiration,
+      persistent: SESSION_COOKIE_CONFIG.expiration !== "Session",
+    },
     analysis: COOKIE_EXPLANATIONS,
   };
 }
+
+export function buildSessionCookie(sessionId: string): string {
+  const attributes = [
+    `Path=${SESSION_COOKIE_CONFIG.path}`,
+    SESSION_COOKIE_CONFIG.httpOnly ? "HttpOnly" : "",
+    SESSION_COOKIE_CONFIG.secure ? "Secure" : "",
+    `SameSite=${SESSION_COOKIE_CONFIG.sameSite}`,
+  ].filter(Boolean);
+
+  return `${SESSION_COOKIE_CONFIG.name}=${encodeURIComponent(sessionId)}; ${attributes.join("; ")}`;
+}
+
+export function buildClearedSessionCookie(): string {
+  return `${buildSessionCookie("")}; Max-Age=0`;
+}
+
+// Backward-compatible exported view for tests and callers that need the current settings.
+export const SESSION_COOKIE_ATTRIBUTES = getCookieInspection().cookie;
