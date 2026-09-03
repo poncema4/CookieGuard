@@ -52,6 +52,8 @@ certs/
 └── localhost-key.pem
 ```
 
+The certificate covers the local hostnames used by the lab, including `localhost` and `127.0.0.1`.
+
 ## Install Dependencies
 
 From the repository root on either platform:
@@ -68,10 +70,13 @@ The root development command starts the frontend and backend concurrently on bot
 npm run dev
 ```
 
-The development services are:
+The application uses one centrally configured backend origin from `scripts/dev-config.mjs`. By default, it uses an HTTPS loopback target so the CSRF experiment can use a genuinely separate host from the frontend.
 
-- Frontend: `https://localhost:3000`
-- Backend: `https://localhost:4443`
+The browser-facing frontend is:
+
+- `https://localhost:3000`
+
+The backend target is controlled by the central configuration rather than repeated across the application. The default target is `https://127.0.0.1:4443`.
 
 The root development runner automatically starts the frontend Node process with `--use-system-ca` so the Next.js HTTPS proxy can trust the local mkcert certificate.
 
@@ -131,6 +136,7 @@ After logging in, browser developer tools can be used to verify that the session
 - `SameSite=Lax`
 - `Path=/`
 - Session expiration
+- Host-only behavior because no `Domain` attribute is set
 
 The login response can also be inspected in the browser Network tab to verify the `Set-Cookie` header.
 
