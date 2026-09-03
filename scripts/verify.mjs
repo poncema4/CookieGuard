@@ -1,11 +1,17 @@
 import { spawnSync } from "node:child_process";
 import process from "node:process";
+import { BACKEND_ORIGIN } from "./dev-config.mjs";
 
 const npmCli = process.env.npm_execpath;
 
 if (!npmCli) {
   throw new Error("npm_execpath is not available. Run this script through npm.");
 }
+
+const env = {
+  ...process.env,
+  COOKIEGUARD_BACKEND_ORIGIN: BACKEND_ORIGIN,
+};
 
 const commands = [
   {
@@ -27,7 +33,7 @@ for (const { label, args } of commands) {
 
   const result = spawnSync(process.execPath, args, {
     cwd: process.cwd(),
-    env: process.env,
+    env,
     stdio: "inherit",
     shell: false,
   });
