@@ -1,18 +1,21 @@
 import { spawn } from "node:child_process";
 import process from "node:process";
 
-const isWindows = process.platform === "win32";
-const npmCommand = isWindows ? "npm.cmd" : "npm";
+const npmCli = process.env.npm_execpath;
+
+if (!npmCli) {
+  throw new Error("npm_execpath is not available. Run this script through npm.");
+}
 
 const processes = [
   {
     name: "backend",
-    args: ["run", "dev", "--workspace=@cookieguard/backend"],
+    args: [npmCli, "run", "dev", "--workspace=@cookieguard/backend"],
     env: process.env,
   },
   {
     name: "frontend",
-    args: ["run", "dev", "--workspace=@cookieguard/frontend"],
+    args: [npmCli, "run", "dev", "--workspace=@cookieguard/frontend"],
     env: {
       ...process.env,
       NODE_OPTIONS: [process.env.NODE_OPTIONS, "--use-system-ca"]
@@ -23,11 +26,11 @@ const processes = [
 ];
 
 const children = processes.map(({ name, args, env }) => {
-  const child = spawn(npmCommand, args, {
+  const child = spawn(process.execPath, args, {
     cwd: process.cwd(),
     env,
     stdio: "inherit",
-    shell: isWindows,
+    shell: false,
   });
 
   child.on("error", (error) => {
