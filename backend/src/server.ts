@@ -1,6 +1,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { createSession, deleteSession, getSession } from "./session.js";
 import { buildClearedSessionCookie, buildSessionCookie, getCookieInspection, SESSION_COOKIE_NAME } from "./cookie-inspection.js";
+import { buildClearedXssLabCookie, createXssLabCookie, XSS_LAB_COOKIE_NAME } from "./xss-lab.js";
 
 const port = 4000;
 
@@ -94,6 +95,7 @@ const server = createServer(async (request, response) => {
   if (url.pathname === "/api/auth/logout" && request.method === "POST") {
     const deleted = deleteSession(cookies[SESSION_COOKIE_NAME]);
     clearSessionCookie(response);
+    response.setHeader("Set-Cookie", [buildClearedXssLabCookie(), buildClearedSessionCookie()]);
     sendJson(response, 200, { authenticated: false, loggedOut: true, sessionDeleted: deleted });
     return;
   }
@@ -112,6 +114,34 @@ const server = createServer(async (request, response) => {
         createdAt: session.createdAt,
       },
     });
+    return;
+  }
+
+  if (url.pathname === "/api/xss-lab/cookie" && request.method === "POST") {
+    if (!session) {
+      sendJson(response, 401, { error: "Authentication required" });
+      return;
+    }
+
+    const body = await readJson(request);
+    const httpOnly = body.httpOnly === true;
+    response.setHeader("Set-Cookie", createXssLabCookie(httpOnly));
+    sendJson(response, 200, {
+      cookieName: XSS_LAB_COOKIE_NAME,
+      httpOnly,
+      mode: httpOnly ? "protected" : "vulnerable",
+    });
+    return;
+  }
+
+  if (url.pathname === "/api/xss-lab/cookie" && request.method === "DELETE") {
+    if (!session) {
+      sendJson(response, 401, { error: "Authentication required" });
+      return;
+    }
+
+    response.setHeader("Set-Cookie", buildClearedXssLabCookie());
+    sendJson(response, 200, { cookieName: XSS_LAB_COOKIE_NAME, cleared: true });
     return;
   }
 
