@@ -2,6 +2,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { createSession, deleteSession, getSession } from "./session.js";
 import { buildClearedSessionCookie, buildSessionCookie, getCookieInspection, SESSION_COOKIE_NAME } from "./cookie-inspection.js";
 import { buildClearedXssLabCookie, createXssLabCookie, XSS_LAB_COOKIE_NAME } from "./xss-lab.js";
+import { buildClearedCsrfLabCookie, createCsrfLabCookie, CSRF_LAB_COOKIE_NAME, isCsrfLabCookiePresent, type CsrfSameSite } from "./csrf-lab.js";
 
 const port = 4000;
 
@@ -39,6 +40,14 @@ function sendJson(response: ServerResponse, statusCode: number, payload: unknown
     ...headers,
   });
   response.end(JSON.stringify(payload));
+}
+
+function sendHtml(response: ServerResponse, statusCode: number, html: string, headers: Record<string, string> = {}) {
+  response.writeHead(statusCode, {
+    "Content-Type": "text/html; charset=utf-8",
+    ...headers,
+  });
+  response.end(html);
 }
 
 function setSessionCookie(response: ServerResponse, sessionId: string) {
@@ -142,6 +151,36 @@ const server = createServer(async (request, response) => {
 
     response.setHeader("Set-Cookie", buildClearedXssLabCookie());
     sendJson(response, 200, { cookieName: XSS_LAB_COOKIE_NAME, cleared: true });
+    return;
+  }
+
+  if (url.pathname === "/api/csrf-lab/setup" && request.method === "GET") {
+    const requested = url.searchParams.get("sameSite");
+    const sameSite: CsrfSameSite = requested === "Strict" ? "Strict" : "Lax";
+    response.setHeader("Set-Cookie", createCsrfLabCookie(sameSite));
+    sendHtml(response, 200, `<!doctype html><html><body style="font-family:sans-serif;max-width:700px;margin:40px auto"><h1>CookieGuard SameSite + CSRF Lab</h1><p>Lab cookie <strong>${CSRF_LAB_COOKIE_NAME}</strong> is configured with <strong>SameSite=${sameSite}</strong>.</p><p>This cookie is intentionally separate from the authenticated session.</p><p>Return to the CookieGuard CSRF lab to run the controlled cross-site POST test.</p></body></html>`);
+    return;
+  }
+
+  if (url.pathname === "/api/csrf-lab/action" && request.method === "POST") {
+    const cookiePresent = isCsrfLabCookiePresent(cookies);
+    if (!cookiePresent) {
+      sendHtml(response, 403, "<!doctype html><html><body style=\"font-family:sans-serif;max-width:700px;margin:40px auto\"><h1>CSRF protection blocked the request</h1><p>The SameSite lab cookie was not sent with this cross-site POST.</p><p>Status: <strong>BLOCKED</strong></p></body></html>");
+      return;
+    }
+
+    sendHtml(response, 200, "<!doctype html><html><body style=\"font-family:sans-serif;max-width:700px;margin:40px auto\"><h1>State-changing request accepted</h1><p>The SameSite lab cookie was sent with this POST.</p><p>Status: <strong>ACCEPTED</strong></p></body></html>");
+    return;
+  }
+
+  if (url.pathname === "/api/csrf-lab/clear" && request.method === "GET") {
+    response.setHeader("Set-Cookie", buildClearedCsrfLabCookie());
+    sendHtml(response, 200, "<!doctype html><html><body style=\"font-family:sans-serif;max-width:700px;margin:40px auto\"><h1>CSRF lab cookie cleared</h1><p>Return to the CookieGuard CSRF lab.</p></body></html>");
+    return;
+  }
+
+  if (url.pathname === "/api/csrf-lab/same-site" && request.method === "GET") {
+    sendHtml(response, 200, "<!doctype html><html><body style=\"font-family:sans-serif;max-width:700px;margin:40px auto\"><h1>Same-site CSRF test</h1><p>This form submits from the target site itself, so the lab cookie is eligible to accompany the POST.</p><form method=\"POST\" action=\"/api/csrf-lab/action\"><button type=\"submit\">Submit same-site POST</button></form></body></html>");
     return;
   }
 
