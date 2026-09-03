@@ -21,7 +21,7 @@ export default function SecureLabPage() {
       <p>This controlled lab demonstrates why the Secure cookie attribute requires HTTPS and how transport encryption protects session traffic in transit.</p>
       <section style={{ marginTop: 28, padding: 20, border: "1px solid #ccc", borderRadius: 8 }}>
         <h2>1. Confirm HTTPS</h2>
-        <p>CookieGuard now runs its local frontend and backend over HTTPS. Your browser may show a certificate warning because the development certificate is self-signed.</p>
+        <p>CookieGuard runs its local frontend and backend over HTTPS using one shared mkcert development certificate stored under <code>certs/</code>. If mkcert is trusted on your machine, the browser should accept the local certificate without a certificate-authority error.</p>
         <button type="button" onClick={testHttps} style={{ padding: 10 }}>Test HTTPS Backend</button>
         <p role="status">{result}</p>
       </section>
