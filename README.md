@@ -114,6 +114,7 @@ CookieGuard/
 ├── certs/
 │   └── (generated locally; never committed)
 ├── scripts/
+│   ├── dev-config.mjs
 │   ├── dev.mjs
 │   ├── verify.mjs
 │   ├── generate-dev-certificate.ps1
