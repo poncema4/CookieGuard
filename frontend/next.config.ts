@@ -1,15 +1,17 @@
 import type { NextConfig } from "next";
-import { BACKEND_ORIGIN } from "../scripts/dev-config.mjs";
+import { backendOrigin } from "../scripts/dev-config.json";
+
+const configuredOrigin = process.env.COOKIEGUARD_BACKEND_ORIGIN ?? backendOrigin;
 
 const nextConfig: NextConfig = {
   env: {
-    NEXT_PUBLIC_COOKIEGUARD_BACKEND_ORIGIN: BACKEND_ORIGIN,
+    NEXT_PUBLIC_COOKIEGUARD_BACKEND_ORIGIN: configuredOrigin,
   },
   async rewrites() {
     return [
       {
         source: "/api/:path*",
-        destination: `${BACKEND_ORIGIN}/api/:path*`,
+        destination: `${configuredOrigin}/api/:path*`,
       },
     ];
   },
