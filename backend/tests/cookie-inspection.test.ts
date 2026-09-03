@@ -12,7 +12,7 @@ import {
 test("exposes the expected session cookie attributes", () => {
   const { cookie } = getCookieInspection();
   assert.equal(cookie.name, SESSION_COOKIE_NAME);
-  assert.equal(cookie.domain, "localhost (host-only)");
+  assert.equal(cookie.domain, "localhost");
   assert.equal(cookie.path, "/");
   assert.equal(cookie.secure, true);
   assert.equal(cookie.httpOnly, true);
