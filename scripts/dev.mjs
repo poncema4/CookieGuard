@@ -27,7 +27,7 @@ const children = processes.map(({ name, args, env }) => {
     cwd: process.cwd(),
     env,
     stdio: "inherit",
-    shell: false,
+    shell: isWindows,
   });
 
   child.on("error", (error) => {
