@@ -1,6 +1,6 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { createSession, deleteSession, getSession } from "./session.js";
-import { getCookieInspection, SESSION_COOKIE_NAME } from "./cookie-inspection.js";
+import { buildClearedSessionCookie, buildSessionCookie, getCookieInspection, SESSION_COOKIE_NAME } from "./cookie-inspection.js";
 
 const port = 4000;
 
@@ -41,17 +41,11 @@ function sendJson(response: ServerResponse, statusCode: number, payload: unknown
 }
 
 function setSessionCookie(response: ServerResponse, sessionId: string) {
-  response.setHeader(
-    "Set-Cookie",
-    `${SESSION_COOKIE_NAME}=${encodeURIComponent(sessionId)}; Path=/; HttpOnly; SameSite=Lax`,
-  );
+  response.setHeader("Set-Cookie", buildSessionCookie(sessionId));
 }
 
 function clearSessionCookie(response: ServerResponse) {
-  response.setHeader(
-    "Set-Cookie",
-    `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`,
-  );
+  response.setHeader("Set-Cookie", buildClearedSessionCookie());
 }
 
 const server = createServer(async (request, response) => {
