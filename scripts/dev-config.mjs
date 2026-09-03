@@ -1,6 +1,11 @@
-const DEFAULT_BACKEND_ORIGIN = "https://127.0.0.1:4443";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 
-export const BACKEND_ORIGIN = process.env.COOKIEGUARD_BACKEND_ORIGIN ?? DEFAULT_BACKEND_ORIGIN;
+const configPath = fileURLToPath(new URL("./dev-config.json", import.meta.url));
+const { backendOrigin } = JSON.parse(readFileSync(configPath, "utf8"));
+
+export const BACKEND_ORIGIN = process.env.COOKIEGUARD_BACKEND_ORIGIN ?? backendOrigin;
 export const BACKEND_PORT = Number(new URL(BACKEND_ORIGIN).port);
 
 if (!/^https:\/\//.test(BACKEND_ORIGIN)) {
