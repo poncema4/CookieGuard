@@ -1,8 +1,8 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { createSession, deleteSession, getSession } from "./session.js";
+import { getCookieInspection, SESSION_COOKIE_NAME } from "./cookie-inspection.js";
 
 const port = 4000;
-const SESSION_COOKIE = "cookieguard_session";
 
 function parseCookies(request: IncomingMessage): Record<string, string> {
   const header = request.headers.cookie;
@@ -43,21 +43,21 @@ function sendJson(response: ServerResponse, statusCode: number, payload: unknown
 function setSessionCookie(response: ServerResponse, sessionId: string) {
   response.setHeader(
     "Set-Cookie",
-    `${SESSION_COOKIE}=${encodeURIComponent(sessionId)}; Path=/; HttpOnly; SameSite=Lax`,
+    `${SESSION_COOKIE_NAME}=${encodeURIComponent(sessionId)}; Path=/; HttpOnly; SameSite=Lax`,
   );
 }
 
 function clearSessionCookie(response: ServerResponse) {
   response.setHeader(
     "Set-Cookie",
-    `${SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`,
+    `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`,
   );
 }
 
 const server = createServer(async (request, response) => {
   const url = new URL(request.url ?? "/", `http://${request.headers.host ?? "localhost"}`);
   const cookies = parseCookies(request);
-  const session = getSession(cookies[SESSION_COOKIE]);
+  const session = getSession(cookies[SESSION_COOKIE_NAME]);
 
   if (url.pathname === "/api/health" && request.method === "GET") {
     sendJson(response, 200, { status: "running" });
@@ -98,9 +98,26 @@ const server = createServer(async (request, response) => {
   }
 
   if (url.pathname === "/api/auth/logout" && request.method === "POST") {
-    const deleted = deleteSession(cookies[SESSION_COOKIE]);
+    const deleted = deleteSession(cookies[SESSION_COOKIE_NAME]);
     clearSessionCookie(response);
     sendJson(response, 200, { authenticated: false, loggedOut: true, sessionDeleted: deleted });
+    return;
+  }
+
+  if (url.pathname === "/api/cookie-inspection" && request.method === "GET") {
+    if (!session) {
+      sendJson(response, 401, { error: "Authentication required" });
+      return;
+    }
+
+    sendJson(response, 200, {
+      ...getCookieInspection(),
+      session: {
+        authenticated: true,
+        username: session.username,
+        createdAt: session.createdAt,
+      },
+    });
     return;
   }
 
