@@ -9,5 +9,9 @@ dist/
 coverage/
 playwright-report/
 test-results/
-backend/certs/*.crt
-backend/certs/*.key
+
+# Local HTTPS development certificates
+certs/*
+backend/certs/*
+frontend/certs/*
+frontend/certificates/*
