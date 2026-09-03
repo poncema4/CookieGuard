@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-const TARGET_ORIGIN = "https://127.0.0.1:4443";
+const TARGET_ORIGIN = process.env.NEXT_PUBLIC_COOKIEGUARD_BACKEND_ORIGIN ?? "https://127.0.0.1:4443";
 
 export default function CsrfLabPage() {
   const [sameSite, setSameSite] = useState<"Lax" | "Strict">("Lax");
@@ -13,7 +13,7 @@ export default function CsrfLabPage() {
       <h1>SameSite + CSRF</h1>
       <p className="hero-copy">Change one browser policy and observe how it affects a cross-site state-changing request.</p>
       <div className="callout">
-        <p>The lab cookie lives on <code>127.0.0.1:4443</code>. Your real authenticated CookieGuard session remains untouched.</p>
+        <p>The lab cookie uses the separate backend target origin. Your real authenticated CookieGuard session remains untouched.</p>
       </div>
 
       <section className="section">
