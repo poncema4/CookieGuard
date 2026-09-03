@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
 import process from "node:process";
+import { BACKEND_ORIGIN } from "./dev-config.mjs";
 
 const npmCli = process.env.npm_execpath;
 
@@ -7,17 +8,22 @@ if (!npmCli) {
   throw new Error("npm_execpath is not available. Run this script through npm.");
 }
 
+const baseEnv = {
+  ...process.env,
+  COOKIEGUARD_BACKEND_ORIGIN: BACKEND_ORIGIN,
+};
+
 const processes = [
   {
     name: "backend",
     args: [npmCli, "run", "dev", "--workspace=@cookieguard/backend"],
-    env: process.env,
+    env: baseEnv,
   },
   {
     name: "frontend",
     args: [npmCli, "run", "dev", "--workspace=@cookieguard/frontend"],
     env: {
-      ...process.env,
+      ...baseEnv,
       NODE_OPTIONS: [process.env.NODE_OPTIONS, "--use-system-ca"]
         .filter(Boolean)
         .join(" "),
