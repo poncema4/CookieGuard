@@ -14,7 +14,7 @@ test("exposes the expected session cookie attributes", () => {
   assert.equal(cookie.name, SESSION_COOKIE_NAME);
   assert.equal(cookie.domain, "localhost (host-only)");
   assert.equal(cookie.path, "/");
-  assert.equal(cookie.secure, false);
+  assert.equal(cookie.secure, true);
   assert.equal(cookie.httpOnly, true);
   assert.equal(cookie.sameSite, "Lax");
   assert.equal(cookie.expiration, "Session");
@@ -27,23 +27,23 @@ test("provides an explanation for every inspected attribute", () => {
   }
 });
 
-test("builds the same cookie attributes used by the login response", () => {
+test("builds the same secure cookie attributes used by the login response", () => {
   const header = buildSessionCookie("test-session");
-  assert.equal(header, `${SESSION_COOKIE_NAME}=test-session; Path=/; HttpOnly; SameSite=Lax`);
+  assert.equal(header, `${SESSION_COOKIE_NAME}=test-session; Path=/; HttpOnly; Secure; SameSite=Lax`);
   assert.match(header, /Path=\//);
   assert.match(header, /HttpOnly/);
+  assert.match(header, /Secure/);
   assert.match(header, /SameSite=Lax/);
-  assert.doesNotMatch(header, /Secure/);
 });
 
 test("builds a session-cookie clearing header with matching security attributes", () => {
   assert.equal(
     buildClearedSessionCookie(),
-    `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`,
+    `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`,
   );
 });
 
-test("documents that Secure is disabled for the current HTTP development environment", () => {
-  assert.equal(SESSION_COOKIE_ATTRIBUTES.secure, false);
+test("documents that Secure requires HTTPS in the current lab", () => {
+  assert.equal(SESSION_COOKIE_ATTRIBUTES.secure, true);
   assert.match(COOKIE_EXPLANATIONS.secure, /HTTPS/i);
 });
