@@ -3,8 +3,23 @@ import { buildClearedSessionCookie, buildSessionCookie, getCookieInspection, SES
 import { buildClearedXssLabCookie, createXssLabCookie, XSS_LAB_COOKIE_NAME } from "./xss-lab.js";
 import { buildClearedCsrfLabCookie, createCsrfLabCookie, CSRF_LAB_COOKIE_NAME, isCsrfLabCookiePresent, type CsrfSameSite } from "./csrf-lab.js";
 import { createHttpsServer } from "./https.js";
-import { BACKEND_ORIGIN, BACKEND_PORT } from "../../scripts/dev-config.mjs";
 import type { IncomingMessage, ServerResponse } from "node:http";
+
+const BACKEND_ORIGIN = process.env.COOKIEGUARD_BACKEND_ORIGIN;
+
+if (!BACKEND_ORIGIN) {
+  throw new Error("COOKIEGUARD_BACKEND_ORIGIN must be set before starting the backend.");
+}
+
+const BACKEND_PORT = Number(new URL(BACKEND_ORIGIN).port);
+
+if (!/^https:\/\//.test(BACKEND_ORIGIN)) {
+  throw new Error("COOKIEGUARD_BACKEND_ORIGIN must use HTTPS.");
+}
+
+if (!Number.isInteger(BACKEND_PORT) || BACKEND_PORT < 1 || BACKEND_PORT > 65535) {
+  throw new Error("COOKIEGUARD_BACKEND_ORIGIN must include a valid port.");
+}
 
 function parseCookies(request: IncomingMessage): Record<string, string> {
   const header = request.headers.cookie;
