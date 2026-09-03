@@ -10,6 +10,6 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "build": "npm run build --workspace=@cookieguard/backend && npm run build --workspace=@cookieguard/frontend",
-    "start": "node scripts/dev.mjs"
+    "start": "npm run start --workspace=@cookieguard/backend & npm run start --workspace=@cookieguard/frontend"
   }
 }
