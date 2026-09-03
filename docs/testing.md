@@ -48,10 +48,11 @@ https://localhost:3000
 1. Log in with the demo account shown by the application.
 2. Open the cookie inspection area.
 3. Confirm the session cookie shows `HttpOnly: true`, `Secure: true`, `SameSite: Lax`, `Path: /`, and session expiration.
-4. Open browser developer tools and inspect the cookie under the site's storage/application view.
-5. Confirm the browser shows the same security attributes.
+4. Confirm the displayed domain is `localhost` and no `Domain` attribute is set, meaning the cookie is host-only.
+5. Open browser developer tools and inspect the cookie under the site's storage/application view.
+6. Confirm the browser shows the same security attributes.
 
-Expected result: the authenticated session cookie is protected by the expected browser security attributes.
+Expected result: the authenticated session cookie is protected by the expected browser security attributes and is host-only for the current host.
 
 ### HttpOnly + XSS
 
@@ -71,7 +72,7 @@ Expected result: the same controlled payload produces different observable resul
 4. Run the controlled cross-site POST and confirm it is blocked.
 5. Repeat with `SameSite=Strict` and confirm the cross-site request remains blocked.
 
-Expected result: same-site behavior succeeds while the controlled cross-site request is rejected by the configured cookie policy.
+Expected result: same-site behavior succeeds while the controlled cross-site request is rejected by the configured cookie policy. The lab uses a separate backend target host so the cross-site test is actually cross-site.
 
 ### Secure + HTTPS
 
@@ -134,7 +135,7 @@ npm run verify
 npm run dev
 ```
 
-The development server should be available at `https://localhost:3000`, with the backend at `https://localhost:4443`.
+The browser-facing development server should be available at `https://localhost:3000`. The backend origin is centrally configured in `scripts/dev-config.mjs`; its default is an HTTPS loopback target used by the labs.
 
 ## Verification criteria
 
