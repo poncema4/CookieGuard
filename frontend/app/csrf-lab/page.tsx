@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-const TARGET_ORIGIN = process.env.NEXT_PUBLIC_COOKIEGUARD_BACKEND_ORIGIN ?? "https://127.0.0.1:4443";
+const TARGET_ORIGIN = process.env.NEXT_PUBLIC_COOKIEGUARD_BACKEND_ORIGIN as string;
 
 export default function CsrfLabPage() {
   const [sameSite, setSameSite] = useState<"Lax" | "Strict">("Lax");
