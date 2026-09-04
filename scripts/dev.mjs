@@ -1,5 +1,7 @@
-import { spawn } from "node:child_process";
+import { spawn, execFileSync } from "node:child_process";
 import process from "node:process";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { BACKEND_ORIGIN } from "./dev-config.mjs";
 
 const npmCli = process.env.npm_execpath;
@@ -13,6 +15,35 @@ const baseEnv = {
   COOKIEGUARD_BACKEND_ORIGIN: BACKEND_ORIGIN,
 };
 
+function findMkcertCaFile() {
+  try {
+    const mkcertRoot = execFileSync("mkcert", ["-CAROOT"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    const caFile = join(mkcertRoot, "rootCA.pem");
+    if (existsSync(caFile)) return caFile;
+  } catch {
+    // Fall through to the standard mkcert locations below.
+  }
+
+  const candidates = process.platform === "win32"
+    ? [join(process.env.LOCALAPPDATA ?? "", "mkcert", "rootCA.pem")]
+    : [
+        join(process.env.XDG_DATA_HOME ?? join(process.env.HOME ?? "", ".local", "share"), "mkcert", "rootCA.pem"),
+        join(process.env.HOME ?? "", ".local", "share", "mkcert", "rootCA.pem"),
+      ];
+
+  return candidates.find((file) => existsSync(file));
+}
+
+const mkcertCaFile = findMkcertCaFile();
+
+const frontendEnv = {
+  ...baseEnv,
+  ...(mkcertCaFile ? { NODE_EXTRA_CA_CERTS: mkcertCaFile } : {}),
+};
+
 const processes = [
   {
     name: "backend",
@@ -22,12 +53,7 @@ const processes = [
   {
     name: "frontend",
     args: [npmCli, "run", "dev", "--workspace=@cookieguard/frontend"],
-    env: {
-      ...baseEnv,
-      NODE_OPTIONS: [process.env.NODE_OPTIONS, "--use-system-ca"]
-        .filter(Boolean)
-        .join(" "),
-    },
+    env: frontendEnv,
   },
 ];
 
