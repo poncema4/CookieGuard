@@ -126,7 +126,7 @@ const server = createHttpsServer(async (request, response) => {
     const requested = url.searchParams.get("sameSite");
     const sameSite: CsrfSameSite = requested === "Strict" ? "Strict" : "Lax";
     response.setHeader("Set-Cookie", createCsrfLabCookie(sameSite));
-    sendHtml(response, 200, `<!doctype html><html><body style="font-family:sans-serif;max-width:700px;margin:40px auto"><h1>CookieGuard SameSite + CSRF Lab</h1><p>Lab cookie <strong>${CSRF_LAB_COOKIE_NAME}</strong> is configured with <strong>SameSite=${sameSite}</strong>.</p><p>This cookie is intentionally separate from the authenticated session.</p><p>Return to the CookieGuard CSRF lab to run the controlled cross-site POST test.</p></body></html>`);
+    sendHtml(response, 200, `<!doctype html><html><body style="font-family:sans-serif;max-width:700px;margin:40px auto"><h1>CookieGuard SameSite + CSRF Lab</h1><p>Lab cookie <strong>${CSRF_LAB_COOKIE_NAME}</strong> is configured with <strong>SameSite=${sameSite}</strong>.</p><p>This cookie is intentionally separate from the authenticated session.</p><p>Return to the CookieGuard CSRF lab to run the controlled same-site and cross-site POST tests.</p></body></html>`, { "Cache-Control": "no-store" });
     return;
   }
 
@@ -146,7 +146,16 @@ const server = createHttpsServer(async (request, response) => {
   }
 
   if (url.pathname === "/api/csrf-lab/same-site" && request.method === "GET") {
-    sendHtml(response, 200, "<!doctype html><html><body style=\"font-family:sans-serif;max-width:700px;margin:40px auto\"><h1>Same-site CSRF test</h1><p>This form submits from the target site itself, so the lab cookie is eligible to accompany the POST.</p><form method=\"POST\" action=\"/api/csrf-lab/action\"><button type=\"submit\">Submit same-site POST</button></form></body></html>");
+    sendHtml(response, 200, "<!doctype html><html><body style=\"font-family:sans-serif;max-width:700px;margin:40px auto\"><h1>Same-site CSRF test</h1><p>This page is served by the target site itself. The POST below uses the dedicated same-site test endpoint, so SameSite=Strict should allow the lab cookie to accompany it.</p><form method=\"POST\" action=\"/api/csrf-lab/same-site\"><button type=\"submit\">Submit same-site POST</button></form></body></html>", { "Cache-Control": "no-store" });
+    return;
+  }
+
+  if (url.pathname === "/api/csrf-lab/same-site" && request.method === "POST") {
+    if (!isCsrfLabCookiePresent(cookies)) {
+      sendHtml(response, 403, "<!doctype html><html><body style=\"font-family:sans-serif;max-width:700px;margin:40px auto\"><h1>Same-site test failed</h1><p>The lab cookie was not present on the target site's own POST.</p><p>Status: <strong>COOKIE NOT SENT</strong></p></body></html>");
+      return;
+    }
+    sendHtml(response, 200, "<!doctype html><html><body style=\"font-family:sans-serif;max-width:700px;margin:40px auto\"><h1>Same-site request accepted</h1><p>The target site submitted the POST to itself and the SameSite lab cookie accompanied the request.</p><p>Status: <strong>ACCEPTED</strong></p></body></html>");
     return;
   }
 
