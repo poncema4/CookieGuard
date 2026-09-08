@@ -68,11 +68,11 @@ Expected result: the same controlled payload produces different observable resul
 
 1. Open the CSRF lab.
 2. Configure `SameSite=Lax` and run the same-site POST scenario.
-3. Confirm the request is accepted.
-4. Run the controlled cross-site POST and confirm it is blocked.
-5. Repeat with `SameSite=Strict` and confirm the cross-site request remains blocked.
+3. Confirm the same-site request is accepted.
+4. Run the controlled cross-site POST and observe the result shown by the lab; cookie handling can vary by browser for Lax, including temporary POST-related behavior.
+5. Repeat with `SameSite=Strict` and confirm the controlled cross-site request is blocked.
 
-Expected result: same-site behavior succeeds while the controlled cross-site request is rejected by the configured cookie policy. The lab uses a separate backend target host so the cross-site test is actually cross-site.
+Expected result: same-site behavior succeeds, while the controlled cross-site result follows the configured SameSite policy. `Strict` provides the deterministic blocked case used by the experiment, while `Lax` is intentionally documented with the browser-specific caveat.
 
 ### Secure + HTTPS
 
@@ -97,7 +97,7 @@ Capture concise screenshots only when they demonstrate a security result or make
 | HttpOnly protected | XSS payload with protected result |
 | HttpOnly vulnerable | XSS payload with exposed lab-cookie result |
 | SameSite same-site | Accepted same-site POST |
-| SameSite cross-site | Blocked cross-site POST |
+| SameSite cross-site | Cross-site POST result showing the configured policy |
 | HTTPS | HTTPS confirmation |
 | Secure cookie | Browser cookie showing `Secure` |
 | HTTPS request | Network request + `Set-Cookie` response |
@@ -139,4 +139,4 @@ The browser-facing development server should be available at `https://localhost:
 
 ## Verification criteria
 
-The project is ready for presentation when all automated checks pass, the browser application loads over HTTPS, cookie inspection matches the expected session configuration, the XSS and CSRF experiments produce their protected and vulnerable/blocked outcomes, and the HTTPS experiment confirms transport and cookie security. Evidence should be organized without secrets or certificates.
+The project is ready for presentation when all automated checks pass, the browser application loads over HTTPS, cookie inspection matches the expected session configuration, the XSS and CSRF experiments produce their protected and policy-dependent outcomes, and the HTTPS experiment confirms transport and cookie security. Evidence should be organized without secrets or certificates.
