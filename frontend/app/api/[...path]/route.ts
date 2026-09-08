@@ -41,7 +41,9 @@ function proxyHeaders(request: Request) {
 }
 
 async function proxy(request: Request, path: string[]) {
-  const target = new URL(`/${path.join("/")}`, backendOrigin);
+  // The `[...path]` segment starts after `/api`, so restore that prefix
+  // when forwarding the request to the backend.
+  const target = new URL(`/api/${path.join("/")}`, backendOrigin);
   target.search = new URL(request.url).search;
   const body = request.method === "GET" || request.method === "HEAD" ? undefined : Buffer.from(await request.arrayBuffer());
   const caFile = findMkcertCaFile();
