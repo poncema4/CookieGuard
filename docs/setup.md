@@ -4,10 +4,12 @@ This document contains the local development setup for CookieGuard on Windows an
 
 ## Prerequisites
 
-- Node.js 24 or a current Node.js release that supports `--use-system-ca`
+- Node.js 20 or newer
 - npm
 - mkcert
 - Git
+
+CookieGuard does not require `NODE_TLS_REJECT_UNAUTHORIZED=0` or disabling TLS certificate verification.
 
 ## First-Time Certificate Setup
 
@@ -64,60 +66,23 @@ npm install
 
 ## Start CookieGuard
 
-The root development command starts the frontend and backend concurrently on both Windows and Linux.
+The recommended development command starts the frontend and backend concurrently on both Windows and Linux:
 
 ```text
 npm run dev
 ```
 
-The application uses one centrally configured backend origin from `scripts/dev-config.mjs`. By default, it uses an HTTPS loopback target so the CSRF experiment can use a genuinely separate host from the frontend.
+The root development runner reads the centralized backend origin from `scripts/dev-config.mjs` and automatically discovers the mkcert root CA when it is available. The frontend Node process receives `NODE_EXTRA_CA_CERTS` so its HTTPS proxy can trust the local backend certificate without disabling TLS verification.
 
 The browser-facing frontend is:
 
 - `https://localhost:3000`
 
-The backend target is controlled by the central configuration rather than repeated across the application. The default target is `https://127.0.0.1:4443`.
+The default backend origin is:
 
-The root development runner automatically starts the frontend Node process with `--use-system-ca` so the Next.js HTTPS proxy can trust the local mkcert certificate.
+- `https://127.0.0.1:4443`
 
-No `NODE_TLS_REJECT_UNAUTHORIZED=0` setting is required.
-
-## Run Workspaces Separately
-
-If the services need to be started independently, use two terminals.
-
-### Windows PowerShell
-
-Terminal 1:
-
-```powershell
-cd .\backend
-npm run dev
-```
-
-Terminal 2:
-
-```powershell
-cd .\frontend
-$env:NODE_OPTIONS="--use-system-ca"
-npm run dev
-```
-
-### Linux Bash
-
-Terminal 1:
-
-```bash
-cd backend
-npm run dev
-```
-
-Terminal 2:
-
-```bash
-cd frontend
-NODE_OPTIONS="--use-system-ca" npm run dev
-```
+The backend origin is centrally configured rather than repeated across the application.
 
 ## Verify HTTPS
 
@@ -140,6 +105,30 @@ After logging in, browser developer tools can be used to verify that the session
 
 The login response can also be inspected in the browser Network tab to verify the `Set-Cookie` header.
 
+## Run Workspaces Separately
+
+The root `npm run dev` command is preferred because it configures the frontend's trust for the local mkcert CA automatically.
+
+If the services must be started independently, the frontend Node process must trust the mkcert root CA. Find the CA path with:
+
+```text
+mkcert -CAROOT
+```
+
+Then set `NODE_EXTRA_CA_CERTS` to the `rootCA.pem` file in that directory before starting the frontend. Do not use `NODE_TLS_REJECT_UNAUTHORIZED=0`.
+
+The backend still requires `COOKIEGUARD_BACKEND_ORIGIN` to be set to the configured HTTPS origin when started independently.
+
+## Expected Session Cookie
+
+After a successful demo login, the authenticated session cookie should be:
+
+```text
+cookieguard_session=<value>; Path=/; HttpOnly; Secure; SameSite=Lax
+```
+
+The application does not set a `Domain` attribute, so the session cookie is host-only. It is a session cookie because no `Expires` or `Max-Age` lifetime is assigned during normal login.
+
 ## Certificate Notes
 
 The local certificate is intentionally stored outside source-controlled application code:
@@ -150,4 +139,4 @@ certs/
 └── localhost-key.pem
 ```
 
-The certificate and private key are generated per development environment and are not committed to Git.
+The certificate and private key are generated per development environment and are not committed to Git. The mkcert root CA private key is managed by mkcert outside the repository and must never be copied into the project or committed.
