@@ -8,11 +8,13 @@ CookieGuard is a local two-process application:
 Browser
    ↓ HTTPS
 Next.js Frontend (localhost:3000)
-   ↓ HTTPS rewrite for /api/*
-Node.js / TypeScript Backend (configured HTTPS origin)
+   ↓ HTTPS API proxy for /api/*
+Node.js / TypeScript Backend (127.0.0.1:4443)
 ```
 
 Authentication creates a server-side session and returns a session cookie to the browser. Authenticated requests use that cookie to retrieve the session from the backend.
+
+The frontend's Next.js catch-all API route proxies `/api/*` requests to the configured HTTPS backend origin. This keeps the browser-facing application on `localhost:3000` while allowing the backend to run on its own HTTPS loopback origin.
 
 ## Cookie Inspection Flow
 
@@ -59,7 +61,7 @@ SameSite=Lax or SameSite=Strict
         ↓
 Same-site POST → cookie eligible to accompany request
         ↓
-Cross-site POST → cookie withheld
+Cross-site POST → cookie withheld by the browser policy
         ↓
 Server returns ACCEPTED or BLOCKED
 ```
@@ -72,8 +74,8 @@ The CSRF lab uses a separate `cookieguard_csrf_lab` cookie and never changes the
 Browser
    ↓ HTTPS
 Next.js Frontend (localhost:3000)
-   ↓ HTTPS
-Node.js Backend (configured HTTPS origin)
+   ↓ HTTPS API proxy
+Node.js Backend (127.0.0.1:4443)
    ↓
 Set-Cookie: Secure; HttpOnly; SameSite=Lax
 ```
@@ -86,9 +88,9 @@ The session cookie includes `Secure`, which instructs the browser to send it onl
 
 ## Development Configuration
 
-The local backend origin is defined once in `scripts/dev-config.mjs`. The development runner, Next.js rewrite, backend listener, and CSRF lab consume that configuration instead of maintaining separate application origins.
+The local backend origin is defined once in `scripts/dev-config.mjs`. The development runner, frontend API proxy, backend listener, and CSRF lab consume that configuration instead of maintaining separate application origins.
 
-The default local target uses HTTPS and the loopback address required by the CSRF experiment. The frontend remains on `localhost`, while the CSRF target uses the separate loopback host so the cross-site test is a real cross-site request.
+The default local target uses HTTPS and the loopback address required by the CSRF experiment. The frontend remains on `localhost`, while the backend uses the configured loopback host so the cross-site test is a real cross-site request.
 
 ## Local Development
 
@@ -96,6 +98,6 @@ The default local target uses HTTPS and the loopback address required by the CSR
 2. Generate the shared certificate with `scripts/generate-dev-certificate.ps1` or `scripts/generate-dev-certificate.sh`.
 3. Start the application with `npm run dev`.
 4. Open the frontend at `https://localhost:3000`.
-5. The backend HTTPS origin is controlled by `scripts/dev-config.mjs` and defaults to the local loopback target used by the labs.
+5. The backend HTTPS origin is controlled by `scripts/dev-config.mjs` and defaults to `https://127.0.0.1:4443`.
 6. The development runner configures Node to trust the local mkcert CA when the frontend proxies HTTPS requests to the backend.
 7. Inspect the session cookie in browser developer tools and verify `Secure`, `HttpOnly`, and `SameSite=Lax`.
