@@ -2,7 +2,6 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { request as httpsRequest } from "node:https";
-import type { IncomingHttpHeaders } from "node:http";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -73,7 +72,7 @@ async function proxy(request: Request, path: string[]) {
           const location = upstream.headers.location;
           if (location) headers.set("location", location);
 
-          const passthroughHeaders: (keyof IncomingHttpHeaders)[] = ["www-authenticate"];
+          const passthroughHeaders: string[] = ["www-authenticate"];
           for (const key of passthroughHeaders) {
             const value = upstream.headers[key];
             if (value) headers.set(key, Array.isArray(value) ? value.join(", ") : value);
