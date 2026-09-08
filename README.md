@@ -28,10 +28,10 @@ Cookie attributes such as `Secure`, `HttpOnly`, and `SameSite` are easy to treat
 ## Architecture / Workflow
 ```text
 Browser
-  ↓
-Next.js Frontend (HTTPS)
-  ↓
-Node.js / TypeScript Backend (HTTPS)
+  ↓ HTTPS
+Next.js Frontend (localhost:3000)
+  ↓ HTTPS API proxy for /api/*
+Node.js / TypeScript Backend (127.0.0.1:4443)
   ├── Authentication / Session Logic
   ├── Cookie Inspection / Analysis
   └── Security Scenarios
@@ -76,8 +76,8 @@ Compare Results
 | Frontend | Next.js |
 | Runtime / Package Manager | Node.js / npm |
 | Backend | Node.js / TypeScript |
-| Testing | Node.js test runner, Playwright, application tests |
-| Web Testing | Burp Suite, browser developer tools |
+| Testing | Node.js test runner and application tests |
+| Web Testing | Browser developer tools |
 | TLS | mkcert |
 | Version Control | Git / GitHub |
 
@@ -146,7 +146,7 @@ Establish a session, inspect its cookie, review each security attribute, run a c
 
 For the `HttpOnly` scenario, CookieGuard uses a separate demonstration cookie so the authenticated application session is not weakened. Vulnerable mode issues the lab cookie without `HttpOnly`; protected mode issues it with `HttpOnly`. The same controlled XSS payload is then used to compare what client-side JavaScript can read.
 
-For the `SameSite` scenario, CookieGuard uses a separate CSRF lab cookie. A same-site POST can include the cookie, while a controlled cross-site POST is blocked when the cookie uses `SameSite=Lax` or `SameSite=Strict`.
+For the `SameSite` scenario, CookieGuard uses a separate CSRF lab cookie. A same-site POST can include the cookie, while a controlled cross-site POST is blocked by the configured SameSite policy. The lab notes that `Lax` can have browser-specific temporary POST behavior, while `Strict` provides the deterministic blocked case used by the experiment.
 
 For the `Secure` scenario, the local frontend and backend run over HTTPS using one locally trusted mkcert development certificate stored under `certs/`. The authenticated session cookie includes `Secure`, `HttpOnly`, and `SameSite=Lax`. Browser developer tools and the login response can be used to verify the resulting cookie attributes and HTTPS transport.
 
