@@ -70,8 +70,10 @@ Expected result: the same controlled payload produces different observable resul
 1. Open the CSRF lab.
 2. Configure `SameSite=Lax` and run the same-site POST scenario.
 3. Confirm the same-site request is accepted.
-4. Run the controlled cross-site POST and observe the result shown by the lab; cookie handling can vary by browser for Lax, including temporary POST-related behavior.
-5. Repeat with `SameSite=Strict` and confirm the controlled cross-site request is blocked.
+4. Inspect the request in the browser Network panel and confirm the expected lab-cookie behavior.
+5. Run the controlled cross-site POST and observe the result shown by the lab; cookie handling can vary by browser for Lax, including temporary POST-related behavior.
+6. Inspect the cross-site request in Network and confirm the protected/blocked result.
+7. Repeat with `SameSite=Strict` and confirm the controlled cross-site request is blocked.
 
 Expected result: same-site behavior succeeds, while the controlled cross-site result follows the configured SameSite policy. `Strict` provides the deterministic blocked case used by the experiment, while `Lax` is intentionally documented with the browser-specific caveat.
 
@@ -89,13 +91,15 @@ Expected result: the application and authenticated session operate over HTTPS an
 
 ### Baseline response hardening
 
-1. Inspect a normal application response in browser developer tools.
-2. Confirm the frontend sends `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, and the restrictive `Permissions-Policy` configured by Next.js.
-3. Confirm backend API/HTML responses use `Cache-Control: no-store` and `X-Content-Type-Options: nosniff`.
-4. Confirm backend malformed cookie values do not cause an application error.
-5. Confirm oversized JSON request bodies do not cause unbounded request-body accumulation.
+The baseline response-hardening checks are covered by automated security tests and code-level verification; a separate screenshot is **not required** for the final evidence set.
 
-Expected result: baseline browser hardening is present without changing the security-lab workflows.
+1. Inspect a normal application response in browser developer tools if you want an additional manual check.
+2. Confirm the frontend sends `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, and the configured `Permissions-Policy`.
+3. Confirm backend API/HTML responses use `Cache-Control: no-store` and `X-Content-Type-Options: nosniff`.
+4. Confirm malformed cookie values do not cause an application error.
+5. Confirm oversized JSON request bodies are bounded and do not cause unbounded request-body accumulation.
+
+Expected result: baseline browser hardening is present without changing the security-lab workflows. These checks do not require an additional `response-hardening.png` screenshot for submission.
 
 ## Evidence checklist
 
@@ -107,19 +111,20 @@ Capture concise screenshots only when they demonstrate a security result or make
 | Cookie inspection | Session cookie attributes |
 | HttpOnly protected | XSS payload with protected result |
 | HttpOnly vulnerable | XSS payload with exposed lab-cookie result |
-| SameSite same-site | Accepted same-site POST |
-| SameSite cross-site | Cross-site POST result showing the configured policy |
+| SameSite same-site | Accepted same-site POST, preferably with Network details |
+| SameSite cross-site | Cross-site POST result showing the configured policy and Network status |
 | HTTPS | HTTPS confirmation |
 | Secure cookie | Browser cookie showing `Secure` |
 | HTTPS request | Network request + `Set-Cookie` response |
 | Logout | Cookie removal/expiration |
-| Response hardening | Browser response headers showing baseline security headers |
+
+The baseline response-hardening checks are intentionally documented and automated rather than represented by a separate required screenshot.
 
 ## Evidence storage
 
 Keep final screenshots and presentation evidence in the repository's `evidence/` directory. Do not commit local development certificates, private keys, browser profiles, credentials, or unrelated screenshots.
 
-Recommended names:
+Recommended final names:
 
 ```text
 evidence/
@@ -132,8 +137,7 @@ evidence/
 ├── https-confirmed.png
 ├── secure-cookie.png
 ├── https-network.png
-├── logout-cookie-cleared.png
-└── response-hardening.png
+└── logout-cookie-cleared.png
 ```
 
 Only keep evidence that directly supports the project demonstration.
