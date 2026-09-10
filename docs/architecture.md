@@ -50,6 +50,8 @@ Compare document.cookie output
 
 The XSS lab deliberately uses a separate `cookieguard_xss_lab` cookie. Vulnerable mode omits `HttpOnly`, allowing client-side JavaScript to read the demonstration cookie. Protected mode includes `HttpOnly`, so the same payload cannot read that cookie. The authenticated application session is not weakened by the experiment.
 
+The XSS lab cookie remains `Secure` in both modes. This isolates the experiment to `HttpOnly` while keeping the demonstration cookie constrained to HTTPS transport.
+
 ## SameSite + CSRF Flow
 
 ```text
@@ -67,6 +69,8 @@ Server returns ACCEPTED or BLOCKED
 ```
 
 The CSRF lab uses a separate `cookieguard_csrf_lab` cookie and never changes the authenticated session cookie. The target origin and lab origin are intentionally different hosts so the browser must apply SameSite rules to the cross-site POST. The backend origin is centrally configured and supplied to the frontend rather than duplicated in individual lab links.
+
+The lab intentionally documents browser-specific Lax behavior and uses Strict as the deterministic blocked case.
 
 ## Secure + HTTPS Flow
 
@@ -86,6 +90,19 @@ The certificate and private key are machine-specific development material and ar
 
 The session cookie includes `Secure`, which instructs the browser to send it only over HTTPS. HTTPS provides encrypted transport; the `Secure` attribute is the browser-side cookie control that prevents the session cookie from being sent over an HTTP connection.
 
+## Response Hardening
+
+The frontend adds baseline browser security headers without using a restrictive Content Security Policy because the XSS lab intentionally executes a controlled inline demonstration payload. The current baseline includes:
+
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY`
+- `Referrer-Policy: no-referrer`
+- `Permissions-Policy` disabling camera, microphone, and geolocation
+
+Backend JSON and HTML responses use `Cache-Control: no-store` and `X-Content-Type-Options: nosniff`. Backend cookie parsing tolerates malformed percent-encoding instead of turning it into a server error, and JSON request bodies are bounded to 64 KiB to avoid unbounded body accumulation.
+
+The Next.js API proxy logs backend connection errors server-side and returns only a generic `Backend unavailable` message to the browser instead of exposing internal error details.
+
 ## Development Configuration
 
 The local backend origin is defined once in `scripts/dev-config.mjs`. The development runner, frontend API proxy, backend listener, and CSRF lab consume that configuration instead of maintaining separate application origins.
@@ -101,3 +118,7 @@ The default local target uses HTTPS and the loopback address required by the CSR
 5. The backend HTTPS origin is controlled by `scripts/dev-config.mjs` and defaults to `https://127.0.0.1:4443`.
 6. The development runner configures Node to trust the local mkcert CA when the frontend proxies HTTPS requests to the backend.
 7. Inspect the session cookie in browser developer tools and verify `Secure`, `HttpOnly`, and `SameSite=Lax`.
+
+## Security Scope
+
+CookieGuard is a local course-project security laboratory rather than a production authentication service. Demo credentials are intentionally fixed for repeatable testing, sessions are stored in memory, and the local certificate is generated with mkcert. These are explicit MVP constraints and are documented rather than presented as production-ready authentication architecture.
