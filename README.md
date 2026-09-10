@@ -150,6 +150,14 @@ For the `SameSite` scenario, CookieGuard uses a separate CSRF lab cookie. A same
 
 For the `Secure` scenario, the local frontend and backend run over HTTPS using one locally trusted mkcert development certificate stored under `certs/`. The authenticated session cookie includes `Secure`, `HttpOnly`, and `SameSite=Lax`. Browser developer tools and the login response can be used to verify the resulting cookie attributes and HTTPS transport.
 
+## Security Scope and Limitations
+CookieGuard is a local course-project security laboratory, not a production authentication system. The demo credentials are intentionally fixed for repeatable classroom testing, sessions are stored in memory, and the development HTTPS certificate is locally generated with mkcert. These choices are deliberate MVP constraints and should not be copied into a production deployment.
+
+The authenticated session cookie is host-only because the application does not set a `Domain` attribute and is protected with `Secure`, `HttpOnly`, and `SameSite=Lax`. The XSS and CSRF experiments use separate lab cookies so the real authenticated session is not intentionally weakened.
+
+## Final MVP Status
+The application MVP is functionally complete for the course demonstration. Automated verification passes locally and in GitHub Actions. Final submission work consists of capturing concise evidence, preparing the presentation/demo flow, and keeping the documentation synchronized with the final implementation.
+
 ## Out of Scope
 - Internet-wide or arbitrary website scanning
 - Full penetration-testing automation
