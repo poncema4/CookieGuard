@@ -88,7 +88,7 @@ async function proxy(request: Request, path: string[]) {
     client.on("error", (error: NodeJS.ErrnoException) => {
       console.error("CookieGuard API proxy error:", error);
       resolve(Response.json(
-        { error: "Backend unavailable", detail: error.code ?? error.message },
+        { error: "Backend unavailable" },
         { status: 502 },
       ));
     });
