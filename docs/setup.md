@@ -129,6 +129,12 @@ cookieguard_session=<value>; Path=/; HttpOnly; Secure; SameSite=Lax
 
 The application does not set a `Domain` attribute, so the session cookie is host-only. It is a session cookie because no `Expires` or `Max-Age` lifetime is assigned during normal login.
 
+## Security Notes
+
+CookieGuard is a local course-project lab rather than a production authentication service. The demo credentials are intentionally fixed, sessions are stored in memory, and the HTTPS certificate is locally generated. Do not reuse those choices for a production application.
+
+The current project intentionally keeps its dependency versions pinned for reproducible course builds. Before any production or Windows-hosted deployment, update Next.js to a currently patched maintenance release and regenerate `package-lock.json`. Next.js has published critical security advisories affecting older 15.x releases; the course MVP is not intended as a production deployment.
+
 ## Certificate Notes
 
 The local certificate is intentionally stored outside source-controlled application code:
