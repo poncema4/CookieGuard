@@ -6,6 +6,7 @@ export function buildXssLabCookie(value: string, httpOnly: boolean): string {
   const attributes = [
     "Path=/",
     httpOnly ? "HttpOnly" : "",
+    "Secure",
     "SameSite=Lax",
   ].filter(Boolean);
 
@@ -13,7 +14,7 @@ export function buildXssLabCookie(value: string, httpOnly: boolean): string {
 }
 
 export function buildClearedXssLabCookie(): string {
-  return `${XSS_LAB_COOKIE_NAME}=; Path=/; SameSite=Lax; Max-Age=0`;
+  return `${XSS_LAB_COOKIE_NAME}=; Path=/; Secure; SameSite=Lax; Max-Age=0`;
 }
 
 export function createXssLabCookie(httpOnly: boolean): string {
