@@ -9,14 +9,16 @@ import {
 
 test("builds the vulnerable XSS lab cookie without HttpOnly", () => {
   const header = buildXssLabCookie("lab-token", false);
-  assert.equal(header, `${XSS_LAB_COOKIE_NAME}=lab-token; Path=/; SameSite=Lax`);
+  assert.equal(header, `${XSS_LAB_COOKIE_NAME}=lab-token; Path=/; Secure; SameSite=Lax`);
   assert.doesNotMatch(header, /HttpOnly/);
+  assert.match(header, /Secure/);
 });
 
 test("builds the protected XSS lab cookie with HttpOnly", () => {
   const header = buildXssLabCookie("lab-token", true);
-  assert.equal(header, `${XSS_LAB_COOKIE_NAME}=lab-token; Path=/; HttpOnly; SameSite=Lax`);
+  assert.equal(header, `${XSS_LAB_COOKIE_NAME}=lab-token; Path=/; HttpOnly; Secure; SameSite=Lax`);
   assert.match(header, /HttpOnly/);
+  assert.match(header, /Secure/);
 });
 
 test("generates a fresh XSS lab cookie value", () => {
@@ -30,6 +32,6 @@ test("generates a fresh XSS lab cookie value", () => {
 test("builds a clearing header for the XSS lab cookie", () => {
   assert.equal(
     buildClearedXssLabCookie(),
-    `${XSS_LAB_COOKIE_NAME}=; Path=/; SameSite=Lax; Max-Age=0`,
+    `${XSS_LAB_COOKIE_NAME}=; Path=/; Secure; SameSite=Lax; Max-Age=0`,
   );
 });
