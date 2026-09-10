@@ -61,6 +61,7 @@ Expected result: the authenticated session cookie is protected by the expected b
 3. Confirm the demonstration cookie is not exposed to client-side JavaScript.
 4. Switch to vulnerable mode and execute the same payload again.
 5. Confirm the separate demonstration cookie value is exposed.
+6. Confirm the lab cookie remains `Secure` in both modes; only `HttpOnly` changes between the two experiment states.
 
 Expected result: the same controlled payload produces different observable results when `HttpOnly` changes. The authenticated application session remains protected because the experiment uses a separate demonstration cookie.
 
@@ -86,6 +87,16 @@ Expected result: same-site behavior succeeds, while the controlled cross-site re
 
 Expected result: the application and authenticated session operate over HTTPS and the session cookie includes `Secure`.
 
+### Baseline response hardening
+
+1. Inspect a normal application response in browser developer tools.
+2. Confirm the frontend sends `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, and the restrictive `Permissions-Policy` configured by Next.js.
+3. Confirm backend API/HTML responses use `Cache-Control: no-store` and `X-Content-Type-Options: nosniff`.
+4. Confirm backend malformed cookie values do not cause an application error.
+5. Confirm oversized JSON request bodies do not cause unbounded request-body accumulation.
+
+Expected result: baseline browser hardening is present without changing the security-lab workflows.
+
 ## Evidence checklist
 
 Capture concise screenshots only when they demonstrate a security result or make the final presentation easier to follow.
@@ -102,6 +113,7 @@ Capture concise screenshots only when they demonstrate a security result or make
 | Secure cookie | Browser cookie showing `Secure` |
 | HTTPS request | Network request + `Set-Cookie` response |
 | Logout | Cookie removal/expiration |
+| Response hardening | Browser response headers showing baseline security headers |
 
 ## Evidence storage
 
@@ -120,7 +132,8 @@ evidence/
 ├── https-confirmed.png
 ├── secure-cookie.png
 ├── https-network.png
-└── logout-cookie-cleared.png
+├── logout-cookie-cleared.png
+└── response-hardening.png
 ```
 
 Only keep evidence that directly supports the project demonstration.
@@ -139,4 +152,4 @@ The browser-facing development server should be available at `https://localhost:
 
 ## Verification criteria
 
-The project is ready for presentation when all automated checks pass, the browser application loads over HTTPS, cookie inspection matches the expected session configuration, the XSS and CSRF experiments produce their protected and policy-dependent outcomes, and the HTTPS experiment confirms transport and cookie security. Evidence should be organized without secrets or certificates.
+The project is ready for presentation when all automated checks pass, the browser application loads over HTTPS, cookie inspection matches the expected session configuration, the XSS and CSRF experiments produce their protected and policy-dependent outcomes, baseline response hardening is present, and the HTTPS experiment confirms transport and cookie security. Evidence should be organized without secrets or certificates.
