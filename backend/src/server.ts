@@ -6,6 +6,7 @@ import { createHttpsServer } from "./https.js";
 import type { IncomingMessage, ServerResponse } from "node:http";
 
 const BACKEND_ORIGIN = process.env.COOKIEGUARD_BACKEND_ORIGIN;
+const MAX_JSON_BODY_BYTES = 64 * 1024;
 
 if (!BACKEND_ORIGIN) {
   throw new Error("COOKIEGUARD_BACKEND_ORIGIN must be set before starting the backend.");
@@ -31,15 +32,26 @@ function parseCookies(request: IncomingMessage): Record<string, string> {
       if (separator === -1) return [part.trim(), ""];
       const name = part.slice(0, separator).trim();
       const value = part.slice(separator + 1).trim();
-      return [name, decodeURIComponent(value)];
+      try {
+        return [name, decodeURIComponent(value)];
+      } catch {
+        return [name, ""];
+      }
     }),
   );
 }
 
 async function readJson(request: IncomingMessage): Promise<Record<string, unknown>> {
   let body = "";
-  for await (const chunk of request) body += chunk;
-  if (!body) return {};
+  let size = 0;
+
+  for await (const chunk of request) {
+    const text = typeof chunk === "string" ? chunk : chunk.toString("utf8");
+    size += Buffer.byteLength(text);
+    if (size <= MAX_JSON_BODY_BYTES) body += text;
+  }
+
+  if (!body || size > MAX_JSON_BODY_BYTES) return {};
 
   try {
     const parsed: unknown = JSON.parse(body);
@@ -50,12 +62,24 @@ async function readJson(request: IncomingMessage): Promise<Record<string, unknow
 }
 
 function sendJson(response: ServerResponse, statusCode: number, payload: unknown, headers: Record<string, string> = {}) {
-  response.writeHead(statusCode, { "Content-Type": "application/json", ...headers });
+  response.writeHead(statusCode, {
+    "Content-Type": "application/json",
+    "Cache-Control": "no-store",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+    ...headers,
+  });
   response.end(JSON.stringify(payload));
 }
 
 function sendHtml(response: ServerResponse, statusCode: number, html: string, headers: Record<string, string> = {}) {
-  response.writeHead(statusCode, { "Content-Type": "text/html; charset=utf-8", ...headers });
+  response.writeHead(statusCode, {
+    "Content-Type": "text/html; charset=utf-8",
+    "Cache-Control": "no-store",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+    ...headers,
+  });
   response.end(html);
 }
 
@@ -126,7 +150,7 @@ const server = createHttpsServer(async (request, response) => {
     const requested = url.searchParams.get("sameSite");
     const sameSite: CsrfSameSite = requested === "Strict" ? "Strict" : "Lax";
     response.setHeader("Set-Cookie", createCsrfLabCookie(sameSite));
-    sendHtml(response, 200, `<!doctype html><html><body style="font-family:sans-serif;max-width:700px;margin:40px auto"><h1>CookieGuard SameSite + CSRF Lab</h1><p>Lab cookie <strong>${CSRF_LAB_COOKIE_NAME}</strong> is configured with <strong>SameSite=${sameSite}</strong>.</p><p>This cookie is intentionally separate from the authenticated session.</p><p>Return to the CookieGuard CSRF lab to run the controlled same-site and cross-site POST tests.</p></body></html>`, { "Cache-Control": "no-store" });
+    sendHtml(response, 200, `<!doctype html><html><body style="font-family:sans-serif;max-width:700px;margin:40px auto"><h1>CookieGuard SameSite + CSRF Lab</h1><p>Lab cookie <strong>${CSRF_LAB_COOKIE_NAME}</strong> is configured with <strong>SameSite=${sameSite}</strong>.</p><p>This cookie is intentionally separate from the authenticated session.</p><p>Return to the CookieGuard CSRF lab to run the controlled same-site and cross-site POST tests.</p></body></html>`);
     return;
   }
 
@@ -146,7 +170,7 @@ const server = createHttpsServer(async (request, response) => {
   }
 
   if (url.pathname === "/api/csrf-lab/same-site" && request.method === "GET") {
-    sendHtml(response, 200, "<!doctype html><html><body style=\"font-family:sans-serif;max-width:700px;margin:40px auto\"><h1>Same-site CSRF test</h1><p>This page is served by the target site itself. The POST below uses the dedicated same-site test endpoint, so SameSite=Strict should allow the lab cookie to accompany it.</p><form method=\"POST\" action=\"/api/csrf-lab/same-site\"><button type=\"submit\">Submit same-site POST</button></form></body></html>", { "Cache-Control": "no-store" });
+    sendHtml(response, 200, "<!doctype html><html><body style=\"font-family:sans-serif;max-width:700px;margin:40px auto\"><h1>Same-site CSRF test</h1><p>This page is served by the target site itself. The POST below uses the dedicated same-site test endpoint, so SameSite=Strict should allow the lab cookie to accompany it.</p><form method=\"POST\" action=\"/api/csrf-lab/same-site\"><button type=\"submit\">Submit same-site POST</button></form></body></html>");
     return;
   }
 
